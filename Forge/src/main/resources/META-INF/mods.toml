@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[38,)"
+license="MIT"
+issueTrackerURL="https://github.com/hypherionmc/MoreCreativeTabs/issues"
+[[mods]]
+
+modId="morecreativetabs"
+version="${file.jarVersion}"
+
+displayName="MoreCreativeTabs"
+#updateJSONURL="https://change.me.example.invalid/updates.json"
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
+logoFile="multiloader.png"
+#credits="Thanks for this example mod goes to Java"
+authors="HypherionSA"
+description='''
+A mod that allows you to customize creative tabs. Add your own, move items to a custom tab or just disable vanilla tabs.
+'''
+
+[[dependencies.morecreativetabs]]
+    modId="forge"
+    mandatory=true
+    versionRange="[38,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.morecreativetabs]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18,1.19)"
+    ordering="NONE"
+    side="BOTH"
