@@ -2,6 +2,8 @@
 
 A minecraft mod creating custom creative tabs with JSON files and resource packs.
 
+[Documentation](https://readme.firstdarkdev.xyz/morecreativetabs/introduction/)
+
 ---
 
 ### Credits
