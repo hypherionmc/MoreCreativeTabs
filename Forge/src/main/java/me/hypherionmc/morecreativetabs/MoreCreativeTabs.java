@@ -1,14 +1,20 @@
 package me.hypherionmc.morecreativetabs;
 
-import me.hypherionmc.morecreativetabs.client.CustomCreativeTabManager;
-import me.hypherionmc.morecreativetabs.client.TabCreator;
-import me.hypherionmc.morecreativetabs.client.TabJsonHelper;
+import com.mojang.brigadier.CommandDispatcher;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
+import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
+import me.hypherionmc.morecreativetabs.client.tabs.TabCreator;
+import me.hypherionmc.morecreativetabs.common.commands.ShowTabNamesCommand;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -22,6 +28,14 @@ public class MoreCreativeTabs {
 
     public MoreCreativeTabs() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupComplete);
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onCommandRegister(RegisterCommandsEvent event) {
+        Logger.info("Registering Commands");
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        ShowTabNamesCommand.register(dispatcher);
     }
 
     // Run after all mods have completed their setup

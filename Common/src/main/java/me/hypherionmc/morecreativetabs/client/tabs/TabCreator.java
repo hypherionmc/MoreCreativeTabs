@@ -1,5 +1,6 @@
-package me.hypherionmc.morecreativetabs.client;
+package me.hypherionmc.morecreativetabs.client.tabs;
 
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 

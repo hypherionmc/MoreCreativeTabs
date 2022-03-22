@@ -1,8 +1,10 @@
-package me.hypherionmc.morecreativetabs.client;
+package me.hypherionmc.morecreativetabs.client.tabs;
 
 import com.google.gson.Gson;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.morecreativetabs.Logger;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +25,7 @@ public class CustomCreativeTabManager {
     public static Set<Item> hidden_stacks = new HashSet<>();
     public static Set<CreativeModeTab> custom_tabs = new HashSet<>();
     public static Set<String> disabled_tabs = new HashSet<>();
+    public static boolean showNames = false;
 
     public static void loadEntries(ResourceManager manager, Collection<ResourceLocation> entries, TabCreator creator) {
         for (ResourceLocation location : entries) {

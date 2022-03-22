@@ -1,6 +1,9 @@
 package me.hypherionmc.morecreativetabs.client;
 
 import me.hypherionmc.morecreativetabs.Logger;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
+import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
+import me.hypherionmc.morecreativetabs.client.tabs.TabCreator;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;

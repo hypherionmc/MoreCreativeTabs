@@ -1,4 +1,4 @@
-package me.hypherionmc.morecreativetabs.client;
+package me.hypherionmc.morecreativetabs.client.data.jsonhelpers;
 
 import java.util.ArrayList;
 

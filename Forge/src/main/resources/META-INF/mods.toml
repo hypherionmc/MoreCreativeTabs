@@ -2,15 +2,14 @@ modLoader="javafml"
 loaderVersion="[38,)"
 license="MIT"
 issueTrackerURL="https://github.com/hypherionmc/MoreCreativeTabs/issues"
-[[mods]]
 
+[[mods]]
 modId="morecreativetabs"
 version="${file.jarVersion}"
-
 displayName="MoreCreativeTabs"
 #updateJSONURL="https://change.me.example.invalid/updates.json"
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
-logoFile="multiloader.png"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/morecreativetabs-forge-fabric"
+logoFile="logo.png"
 #credits="Thanks for this example mod goes to Java"
 authors="HypherionSA"
 description='''
