@@ -27,7 +27,7 @@
     "mixins": [
       "morecreativetabs.mixins.json"
     ],
-
+    "accessWidener": "morecreativetabs.accesswidener",
     "depends": {
       "fabricloader": ">=0.12",
       "fabric": "*",

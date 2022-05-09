@@ -10,7 +10,6 @@ import net.minecraft.network.chat.TextComponent;
 
 // Allows you to see the names of the tabs, to be used for disabling built-in tabs
 public class ShowTabNamesCommand {
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> showTabs =
                 Commands.literal("showTabNames")

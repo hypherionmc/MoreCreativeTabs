@@ -9,6 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
@@ -27,6 +28,10 @@ public class CustomCreativeTabManager {
     public static Set<String> disabled_tabs = new HashSet<>();
     public static boolean showNames = false;
 
+    public static ArrayList<ItemStack> tabItems = new ArrayList<>();
+
+    public static TabEvents tabEvents = null;
+
     public static void loadEntries(ResourceManager manager, Collection<ResourceLocation> entries, TabCreator creator) {
         for (ResourceLocation location : entries) {
             Logger.info("Processing " + location.toString());
@@ -35,7 +40,6 @@ public class CustomCreativeTabManager {
                 TabJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), TabJsonHelper.class);
 
                 if (json.tab_enabled) {
-                    ArrayList<ItemStack> tabItems = new ArrayList<>();
 
                     json.tab_items.forEach(item -> {
                         ItemStack stack = getItemStack(item.name);
@@ -50,6 +54,9 @@ public class CustomCreativeTabManager {
                                 } catch (CommandSyntaxException e) {
                                     e.printStackTrace();
                                 }
+                            }
+                            if (stack.getTag() != null && stack.getTag().contains("customName")) {
+                                stack.setHoverName(new TranslatableComponent(stack.getTag().getString("customName")));
                             }
                             tabItems.add(stack);
                         }
@@ -76,8 +83,30 @@ public class CustomCreativeTabManager {
             @Override
             public ItemStack makeIcon() {
                 AtomicReference<ItemStack> icon = new AtomicReference<>(ItemStack.EMPTY);
-                Registry.ITEM.getOptional(new ResourceLocation(json.tab_icon)).ifPresent(item -> {
-                    icon.set(new ItemStack(item));
+                TabJsonHelper.TabIcon tabIcon = new TabJsonHelper.TabIcon();
+
+                if (json.tab_stack != null) {
+                    tabIcon = json.tab_stack;
+                } else if (json.tab_icon != null) {
+                    tabIcon = new TabJsonHelper.TabIcon();
+                    tabIcon.name = json.tab_icon;
+                }
+
+                TabJsonHelper.TabIcon finalTabIcon = tabIcon;
+                Registry.ITEM.getOptional(new ResourceLocation(tabIcon.name)).ifPresent(item -> {
+                    if (finalTabIcon.nbt != null) {
+                        CompoundTag tag = new CompoundTag();
+                        try {
+                            tag = TagParser.parseTag(finalTabIcon.nbt);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        ItemStack stack = new ItemStack(item);
+                        stack.setTag(tag);
+                        icon.set(stack);
+                    } else {
+                        icon.set(new ItemStack(item));
+                    }
                 });
                 return icon.get();
             }
@@ -106,6 +135,28 @@ public class CustomCreativeTabManager {
     private static ItemStack getItemStack(String jsonItem) {
         Optional<Item> itemOptional = Registry.ITEM.getOptional(new ResourceLocation(jsonItem));
         return itemOptional.map(ItemStack::new).orElse(ItemStack.EMPTY);
+    }
+
+    public static void setTabEvents(TabEvents tabEvents) {
+        CustomCreativeTabManager.tabEvents = tabEvents;
+    }
+
+    public static void clearTabs() {
+        hidden_stacks.clear();
+        disabled_tabs.clear();
+        tabItems.clear();
+        CreativeModeTab[] oldTabs = CreativeModeTab.TABS;
+        List<CreativeModeTab> newTabs = new ArrayList<>();
+
+        for (CreativeModeTab oldTab : oldTabs) {
+            if (custom_tabs.stream().noneMatch(tab -> tab.getRecipeFolderName().equalsIgnoreCase(oldTab.getRecipeFolderName()))) {
+                newTabs.add(oldTab);
+            }
+        }
+        if (tabEvents != null) {
+            tabEvents.setNewTabs(newTabs.toArray(new CreativeModeTab[0]));
+        }
+        custom_tabs.clear();
     }
 
 }

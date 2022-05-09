@@ -7,12 +7,18 @@ public class TabJsonHelper {
     public boolean tab_enabled;
     public String tab_name;
     public String tab_icon;
+    public TabIcon tab_stack;
     public String tab_background;
     public ArrayList<TabItem> tab_items;
 
     public static class TabItem {
         public String name;
         public boolean hide_old_tab;
+        public String nbt;
+    }
+
+    public static class TabIcon {
+        public String name;
         public String nbt;
     }
 }

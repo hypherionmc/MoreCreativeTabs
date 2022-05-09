@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "CreativeModeTabMixin"
+    "CreativeModeTabMixin",
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
