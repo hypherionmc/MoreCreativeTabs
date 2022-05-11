@@ -72,7 +72,7 @@ public class MoreCreativeTabs {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
 
             ResourceManager manager = Minecraft.getInstance().getResourceManager();
-            Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.contains(".json") && !path.contains("disabled_tabs"));
+            Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.endsWith(".json") && !path.contains("disabled_tabs"));
             Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
 
             if (!disabledTabs.isEmpty()) {

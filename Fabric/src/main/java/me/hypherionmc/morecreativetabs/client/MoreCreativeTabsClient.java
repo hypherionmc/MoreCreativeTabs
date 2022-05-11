@@ -67,7 +67,7 @@ public class MoreCreativeTabsClient implements ClientModInitializer {
         Logger.info("Checking for custom creative tabs");
         CustomCreativeTabManager.clearTabs();
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.contains(".json") && !path.contains("disabled_tabs"));
+        Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.endsWith(".json") && !path.contains("disabled_tabs"));
         Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
 
         if (!disabledTabs.isEmpty()) {

@@ -15,6 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,7 +29,7 @@ public class CustomCreativeTabManager {
     public static Set<String> disabled_tabs = new HashSet<>();
     public static boolean showNames = false;
 
-    public static ArrayList<ItemStack> tabItems = new ArrayList<>();
+    public static HashMap<ItemStack, Pair<String, String>> customNames = new HashMap<>();
 
     public static TabEvents tabEvents = null;
 
@@ -38,6 +39,7 @@ public class CustomCreativeTabManager {
 
             try (InputStream stream = manager.getResource(location).getInputStream()) {
                 TabJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), TabJsonHelper.class);
+                ArrayList<ItemStack> tabItems = new ArrayList<>();
 
                 if (json.tab_enabled) {
 
@@ -56,7 +58,7 @@ public class CustomCreativeTabManager {
                                 }
                             }
                             if (stack.getTag() != null && stack.getTag().contains("customName")) {
-                                stack.setHoverName(new TranslatableComponent(stack.getTag().getString("customName")));
+                                customNames.put(stack, Pair.of("morecreativetabs." + json.tab_name, stack.getTag().getString("customName")));
                             }
                             tabItems.add(stack);
                         }
@@ -144,7 +146,7 @@ public class CustomCreativeTabManager {
     public static void clearTabs() {
         hidden_stacks.clear();
         disabled_tabs.clear();
-        tabItems.clear();
+        customNames.clear();
         CreativeModeTab[] oldTabs = CreativeModeTab.TABS;
         List<CreativeModeTab> newTabs = new ArrayList<>();
 
