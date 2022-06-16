@@ -26,10 +26,10 @@ public class MoreCreativeTabsCommand {
                     CustomCreativeTabManager.showNames = enabled;
                     context.getSource().sendSuccess(enabled ? new TextComponent("Showing tab registry names") : new TextComponent("Showing tab names"), true);
                     return 1;
-                })).then(Commands.literal("reloadTabs").executes(context -> {
+                }))).then(Commands.literal("reloadTabs").executes(context -> {
                     PlatformServices.helper.reloadTabs();
                     return 1;
-                })))
+                }))
         );
     }
 
