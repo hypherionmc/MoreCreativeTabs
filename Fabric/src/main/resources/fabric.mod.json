@@ -19,9 +19,6 @@
     "entrypoints": {
       "client": [
         "me.hypherionmc.morecreativetabs.client.MoreCreativeTabsClient"
-      ],
-      "main": [
-        "me.hypherionmc.morecreativetabs.MoreCreativeTabs"
       ]
     },
     "mixins": [
@@ -29,9 +26,9 @@
     ],
     "accessWidener": "morecreativetabs.accesswidener",
     "depends": {
-      "fabricloader": ">=0.12",
+      "fabricloader": ">=0.14",
       "fabric": "*",
-      "minecraft": "1.18.x",
+      "minecraft": "1.19.x",
       "java": ">=17"
     }
   }

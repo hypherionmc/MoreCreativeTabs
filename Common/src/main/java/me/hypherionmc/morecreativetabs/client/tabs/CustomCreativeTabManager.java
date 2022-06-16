@@ -2,7 +2,7 @@ package me.hypherionmc.morecreativetabs.client.tabs;
 
 import com.google.gson.Gson;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.hypherionmc.morecreativetabs.Logger;
+import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
@@ -10,9 +10,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,15 +45,14 @@ public class CustomCreativeTabManager {
 
     /**
      * Load and process the resource/data pack
-     * @param manager - The Minecraft Resource Manager
      * @param entries - The found entries
      * @param creator - The "helper" class that creates the custom tab
      */
-    public static void loadEntries(ResourceManager manager, Collection<ResourceLocation> entries, TabCreator creator) {
-        for (ResourceLocation location : entries) {
-            Logger.info("Processing " + location.toString());
+    public static void loadEntries(Map<ResourceLocation, Resource> entries, TabCreator creator) {
+        entries.forEach((location, resource) -> {
+            ModConstants.logger.info("Processing " + location.toString());
 
-            try (InputStream stream = manager.getResource(location).getInputStream()) {
+            try (InputStream stream = resource.open()) {
                 TabJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), TabJsonHelper.class);
                 ArrayList<ItemStack> tabItems = new ArrayList<>();
 
@@ -76,7 +75,7 @@ public class CustomCreativeTabManager {
 
                                     /* Give the item a "Custom Name" if defined in NBT */
                                     if (tag.contains("customName")) {
-                                        stack.setHoverName(new TextComponent(tag.getString("customName")));
+                                        stack.setHoverName(Component.literal(tag.getString("customName")));
                                     }
                                 } catch (CommandSyntaxException e) {
                                     e.printStackTrace();
@@ -92,10 +91,10 @@ public class CustomCreativeTabManager {
                     custom_tabs.add(creator.createTab(json, tabItems));
                 }
             } catch (Exception e) {
-                Logger.error("Failed to process creative tab");
+                ModConstants.logger.error("Failed to process creative tab");
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     /**
@@ -170,18 +169,18 @@ public class CustomCreativeTabManager {
 
     /**
      * Load disabled tabs for later processing
-     * @param manager - The minecraft resource manager
-     * @param location - The resource to load the entries from
      */
-    public static void loadDisabledTabs(ResourceManager manager, ResourceLocation location) {
-        Logger.info("Processing " + location.toString());
-        try (InputStream stream = manager.getResource(location).getInputStream()) {
-            DisabledTabsJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), DisabledTabsJsonHelper.class);
-            disabled_tabs.addAll(json.disabled_tabs);
-        } catch (Exception e) {
-            Logger.error("Failed to process disabled tabs for " + location);
-            e.printStackTrace();
-        }
+    public static void loadDisabledTabs(Map<ResourceLocation, Resource> resourceMap) {
+       resourceMap.forEach((location, resource) -> {
+           ModConstants.logger.info("Processing " + location.toString());
+           try (InputStream stream = resource.open()) {
+               DisabledTabsJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), DisabledTabsJsonHelper.class);
+               disabled_tabs.addAll(json.disabled_tabs);
+           } catch (Exception e) {
+               ModConstants.logger.error("Failed to process disabled tabs for " + location);
+               e.printStackTrace();
+           }
+       });
     }
 
     /**

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
     id 'idea'
     id "com.modrinth.minotaur" version "2.+"
@@ -90,7 +90,7 @@ modrinth {
     changelog = rootProject.file("changelog-fabric.md").text.trim()
     uploadFile = jar
     versionName = "[Fabric/Quilt ${minecraft_version}] MoreCreativeTabs - ${project.version}"
-    gameVersions = ["1.18.1", "1.18.2"]
+    gameVersions = ["1.19"]
     loaders = [ "fabric", "quilt" ]
     dependencies {
         required.project "P7dR8mSH"
@@ -106,8 +106,7 @@ curseforge {
     project {
         id = "581838"
         releaseType = "release"
-        addGameVersion "1.18.2"
-        addGameVersion "1.18.1"
+        addGameVersion "1.19"
         addGameVersion "Fabric"
         addGameVersion "Quilt"
         addGameVersion "Java 17"

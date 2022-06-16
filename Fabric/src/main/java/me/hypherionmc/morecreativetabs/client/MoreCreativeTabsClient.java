@@ -1,25 +1,27 @@
 package me.hypherionmc.morecreativetabs.client;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import me.hypherionmc.morecreativetabs.Logger;
+import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 
-import java.util.Collection;
+import java.util.Map;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.argument;
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class MoreCreativeTabsClient implements ClientModInitializer {
 
@@ -28,19 +30,21 @@ public class MoreCreativeTabsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         /* Register Client Commands */
-        Logger.info("Registering Commands");
-        ClientCommandManager.DISPATCHER.register(literal("mct").then(literal("showTabNames")
-                .then(argument("enabled", bool()).executes(context -> {
-                    boolean enabled = BoolArgumentType.getBool(context, "enabled");
-                    CustomCreativeTabManager.showNames = enabled;
-                    context.getSource().sendFeedback(enabled ? new TextComponent("Showing tab registry names") : new TextComponent("Showing tab names"));
-                    return 1;
-                }))).then(literal("reloadTabs").executes(ctx -> {
-                    PlatformServices.helper.reloadTabs();
-                    ctx.getSource().sendFeedback(new TextComponent("Reloaded Custom Tabs"));
-                    return 1;
-                }))
-        );
+        ClientCommandRegistrationCallback.EVENT.register((phase, listener) -> {
+            ModConstants.logger.info("Registering Commands");
+            ClientCommandManager.getActiveDispatcher().register(literal("mct").then(literal("showTabNames")
+                            .then(argument("enabled", bool()).executes(context -> {
+                                boolean enabled = BoolArgumentType.getBool(context, "enabled");
+                                CustomCreativeTabManager.showNames = enabled;
+                                context.getSource().sendFeedback(enabled ? Component.literal("Showing tab registry names") : Component.literal("Showing tab names"));
+                                return 1;
+                            }))).then(literal("reloadTabs").executes(ctx -> {
+                        PlatformServices.helper.reloadTabs();
+                        ctx.getSource().sendFeedback(Component.literal("Reloaded Custom Tabs"));
+                        return 1;
+                    }))
+            );
+        });
 
         /* Load initial entries and cache old tabs */
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
@@ -64,17 +68,17 @@ public class MoreCreativeTabsClient implements ClientModInitializer {
      * Called to reload all creative tabs
      */
     public static void reloadTabs() {
-        Logger.info("Checking for custom creative tabs");
+        ModConstants.logger.info("Checking for custom creative tabs");
         CustomCreativeTabManager.clearTabs();
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.endsWith(".json") && !path.contains("disabled_tabs"));
-        Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
+        Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs", path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs"));
+        Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
 
         if (!disabledTabs.isEmpty()) {
-            CustomCreativeTabManager.loadDisabledTabs(manager, disabledTabs.stream().findFirst().get());
+            CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
         }
 
-        CustomCreativeTabManager.loadEntries(manager, customTabs, new FabricTabCreator());
+        CustomCreativeTabManager.loadEntries(customTabs, new FabricTabCreator());
     }
 
 }

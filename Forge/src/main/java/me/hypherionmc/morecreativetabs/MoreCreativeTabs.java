@@ -3,6 +3,7 @@ package me.hypherionmc.morecreativetabs;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author HypherionSA
@@ -33,18 +34,18 @@ public class MoreCreativeTabs {
      * Called to reload all creative tabs
      */
     public static void reloadTabs() {
-        Logger.info("Checking for custom creative tabs");
+        ModConstants.logger.info("Checking for custom creative tabs");
         CustomCreativeTabManager.clearTabs();
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             ResourceManager manager = Minecraft.getInstance().getResourceManager();
-            Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs", path -> path.endsWith(".json") && !path.contains("disabled_tabs"));
-            Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
+            Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs", path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs"));
+            Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
 
             if (!disabledTabs.isEmpty()) {
-                CustomCreativeTabManager.loadDisabledTabs(manager, disabledTabs.stream().findFirst().get());
+                CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
             }
 
-            CustomCreativeTabManager.loadEntries(manager, customTabs, CustomCreativeTabManager::defaultTabCreator);
+            CustomCreativeTabManager.loadEntries(customTabs, CustomCreativeTabManager::defaultTabCreator);
         });
     }
 }

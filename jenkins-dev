@@ -1,0 +1,65 @@
+String getDiscordMessage() {
+    def msg = "**Status:** " + currentBuild.currentResult.toLowerCase() + "\n**Branch:** ${BRANCH_NAME}\n**Changes:**"
+    if (!currentBuild.changeSets.isEmpty()) {
+        currentBuild.changeSets.first().getLogs().any {
+            def line = "\n- `" + it.getCommitId().substring(0, 8) + "` *" + it.getComment().split("\n")[0].replaceAll('(?<!\\\\)([_*~`])', '\\\\$1') + "*"
+            if (msg.length() + line.length() <= 1500)   {
+                msg += line
+                return
+            } else {
+                return true
+            }
+        }
+    } else {
+        msg += "\n- no changes"
+    }
+
+    msg += "\n**Artifacts:**"
+    currentBuild.rawBuild.getArtifacts().any {
+        def line = "\n- [" + it.getDisplayPath() + "](" + env.BUILD_URL + "artifact/" + it.getHref() + ")"
+        if (msg.length() + line.length() <= 2000)   {
+            msg += line
+            return
+        } else {
+            return true
+        }
+    }
+    return msg
+}
+
+pipeline {
+    agent any
+    tools {
+        jdk "JAVA17"
+    }
+    stages {
+        stage("Prepare") {
+            steps {
+                sh "chmod +x ./gradlew"
+                sh "./gradlew clean"
+            }
+        }
+        stage("Publish") {
+            steps {
+                sh "./gradlew build"
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: "artifacts/*.jar", fingerprint: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh "./gradlew --stop"
+            deleteDir()
+
+            discordSend webhookURL: env.FDD_WH_ADMIN,
+                    title: "MoreCreativeTabs [Forge/Fabric/Quilt] 1.19.x Snapshot #${BUILD_NUMBER}",
+                    link: env.BUILD_URL,
+                    result: currentBuild.currentResult,
+                    description: getDiscordMessage()
+        }
+    }
+}

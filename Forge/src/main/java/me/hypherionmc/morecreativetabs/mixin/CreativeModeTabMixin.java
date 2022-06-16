@@ -3,7 +3,6 @@ package me.hypherionmc.morecreativetabs.mixin;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +22,7 @@ public class CreativeModeTabMixin {
     @Inject(at = @At("RETURN"), method = "getDisplayName", cancellable = true)
     public void getDisplayName(CallbackInfoReturnable<Component> cir) {
         if (CustomCreativeTabManager.showNames) {
-            cir.setReturnValue(new TextComponent(((CreativeModeTab)(Object)this).getRecipeFolderName()));
+            cir.setReturnValue(Component.literal(((CreativeModeTab)(Object)this).getRecipeFolderName()));
         }
     }
 
