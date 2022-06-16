@@ -62,5 +62,5 @@ subprojects {
         }
     }
 
-    build.finalizedBy(copyAllArtifacts);
+    build.finalizedBy(copyAllArtifacts)
 }

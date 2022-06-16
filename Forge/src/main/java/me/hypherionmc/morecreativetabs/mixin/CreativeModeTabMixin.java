@@ -13,6 +13,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * @author HypherionSA
+ * Mixin to change the Creative tab icon, remove items from disabled tabs
+ */
 @Mixin(CreativeModeTab.class)
 public class CreativeModeTabMixin {
 
