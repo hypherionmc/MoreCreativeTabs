@@ -154,5 +154,5 @@ curseforge {
 }
 
 afterEvaluate {
-    tasks.curseforge581838.dependsOn reobfShadowJar
+    tasks.curseforge581838.dependsOn reobfJar
 }
