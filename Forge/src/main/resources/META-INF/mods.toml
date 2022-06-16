@@ -6,7 +6,7 @@ issueTrackerURL="https://github.com/hypherionmc/MoreCreativeTabs/issues"
 [[mods]]
 modId="morecreativetabs"
 version="${file.jarVersion}"
-displayName="MoreCreative Tabs"
+displayName="MoreCreativeTabs"
 #updateJSONURL="https://change.me.example.invalid/updates.json"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/morecreativetabs-forge-fabric"
 logoFile="logo.png"

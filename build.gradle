@@ -8,9 +8,12 @@ subprojects {
         release = project.properties['release'] ?: false
     }
 
+    def version_base = "${project.version}"
+    version = "${version_base}.${project.version_patch}"
+
     // Jenkins
     if (System.getenv('BUILD_NUMBER') != null && project.release == false) {
-        version = version + "." + System.getenv('BUILD_NUMBER') + "d"
+        version = version_base + "." + System.getenv('BUILD_NUMBER') + "d"
     }
 
     jar {
