@@ -23,6 +23,13 @@ apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "${mod_name}-forge-${minecraft_version}"
 
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+
+    config "${mod_id}_common.mixins.json"
+    config "${mod_id}.mixins.json"
+}
+
 minecraft {
     mappings channel: 'official', version: minecraft_version
 
@@ -34,7 +41,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=morecreativetabs.mixins.json"
+            args "-mixin.config=${mod_id}_common.mixins.json", "-mixin.config=${mod_id}.mixins.json"
             ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Client'
             mods {
@@ -49,6 +56,7 @@ minecraft {
             workingDirectory project.file('run')
             ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Server'
+            args "-mixin.config=${mod_id}_common.mixins.json", "-mixin.config=${mod_id}.mixins.json"
             mods {
                 modServerRun {
                     source sourceSets.main
@@ -62,6 +70,7 @@ minecraft {
             ideaModule "${rootProject.name}.${project.name}.main"
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
             taskName 'Data'
+            args "-mixin.config=${mod_id}_common.mixins.json", "-mixin.config=${mod_id}.mixins.json"
             mods {
                 modDataRun {
                     source sourceSets.main
@@ -88,6 +97,10 @@ tasks.withType(JavaCompile) {
 
 processResources {
     from project(":Common").sourceSets.main.resources
+
+    filesMatching('*.mixins.json') {
+        expand "refmap_target": "${mod_id}."
+    }
 }
 
 
@@ -107,11 +120,6 @@ publishing {
             url "file://" + System.getenv("local_maven")
         }
     }
-}
-
-mixin {
-    add sourceSets.main, "morecreativetabs.refmap.json"
-    config 'morecreativetabs.mixins.json'
 }
 
 modrinth {

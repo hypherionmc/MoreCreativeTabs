@@ -1,6 +1,7 @@
 package me.hypherionmc.morecreativetabs;
 
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
+import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -45,7 +46,7 @@ public class MoreCreativeTabs {
                 CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
             }
 
-            CustomCreativeTabManager.loadEntries(customTabs, CustomCreativeTabManager::defaultTabCreator);
+            CustomCreativeTabManager.loadEntries(customTabs, ((jsonHelper, stacks) -> CreativeTabUtils.defaultTabCreator(-1, jsonHelper, stacks)));
         });
     }
 }

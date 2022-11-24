@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author HypherionSA
- * Helper class for Custom Tab Creators... Mostly used by Fabric
+ * Helper class for Custom Tab Creators...
  */
 public interface TabCreator {
 

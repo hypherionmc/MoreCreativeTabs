@@ -14,6 +14,7 @@ public class TabJsonHelper {
     public String tab_icon;
     public TabIcon tab_stack;
     public String tab_background;
+    public String replaces;
     public ArrayList<TabItem> tab_items;
 
     public static class TabItem {
