@@ -16,7 +16,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public void reloadTabs() {
-        MoreCreativeTabsClient.reloadTabs();
+        FabricResourceLoader.reloadTabs();
     }
 
 }

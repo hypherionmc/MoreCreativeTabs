@@ -8,24 +8,14 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.item.CreativeModeTab;
-
-import java.util.Map;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class MoreCreativeTabsClient implements ClientModInitializer {
-
-    private boolean hasRun = false;
 
     @Override
     public void onInitializeClient() {
@@ -47,38 +37,7 @@ public class MoreCreativeTabsClient implements ClientModInitializer {
         });
 
         /* Load initial entries and cache old tabs */
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
-            @Override
-            public ResourceLocation getFabricId() {
-                return new ResourceLocation("morecreativetabs", "tabs");
-            }
-
-            @Override
-            public void onResourceManagerReload(ResourceManager resourceManager) {
-                if (!hasRun) {
-                    CustomCreativeTabManager.tabs_before = CreativeModeTab.TABS;
-                    reloadTabs();
-                    hasRun = true;
-                }
-            }
-        });
-    }
-
-    /**
-     * Called to reload all creative tabs
-     */
-    public static void reloadTabs() {
-        ModConstants.logger.info("Checking for custom creative tabs");
-        CustomCreativeTabManager.clearTabs();
-        ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs", path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs"));
-        Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
-
-        if (!disabledTabs.isEmpty()) {
-            CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
-        }
-
-        CustomCreativeTabManager.loadEntries(customTabs, new FabricTabCreator());
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new FabricResourceLoader());
     }
 
 }

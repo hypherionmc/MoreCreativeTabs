@@ -4,11 +4,8 @@ import com.google.gson.Gson;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
-import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
-import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
@@ -22,8 +19,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
+import static me.hypherionmc.morecreativetabs.util.CreativeTabUtils.fileToTab;
 import static me.hypherionmc.morecreativetabs.util.CreativeTabUtils.getItemStack;
 
 /**
@@ -47,7 +44,7 @@ public class CustomCreativeTabManager {
     /* A fixed backup of all creative tabs, before custom ones are added */
     public static CreativeModeTab[] tabs_before;
 
-    public static HashMap<String, Pair<TabJsonHelper, List<ItemStack>>> replaced_tabs = new HashMap<>();
+    public static HashMap<String, Pair<CustomCreativeTab, List<ItemStack>>> replaced_tabs = new HashMap<>();
 
     /**
      * Load and process the resource/data pack
@@ -59,7 +56,7 @@ public class CustomCreativeTabManager {
             ModConstants.logger.info("Processing " + location.toString());
 
             try (InputStream stream = resource.open()) {
-                TabJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), TabJsonHelper.class);
+                CustomCreativeTab json = new Gson().fromJson(new InputStreamReader(stream), CustomCreativeTab.class);
                 ArrayList<ItemStack> tabItems = new ArrayList<>();
 
                 /* Check if the tab is enabled and should be loaded */
@@ -67,43 +64,46 @@ public class CustomCreativeTabManager {
 
                     /* Loop over all the Item Stack entries */
                     json.tab_items.forEach(item -> {
-                        ItemStack stack = getItemStack(item.name);
-                        if (stack != ItemStack.EMPTY) {
-                            if (item.hide_old_tab) {
-                                hidden_stacks.add(stack.getItem());
-                            }
-
-                            /* Parse the Item NBT and apply it to the stack */
-                            if (item.nbt != null && !item.nbt.isEmpty()) {
-                                try {
-                                    CompoundTag tag = TagParser.parseTag(item.nbt);
-                                    stack.setTag(tag);
-
-                                    /* Give the item a "Custom Name" if defined in NBT */
-                                    if (tag.contains("customName")) {
-                                        stack.setHoverName(Component.literal(tag.getString("customName")));
-                                    }
-                                } catch (CommandSyntaxException e) {
-                                    e.printStackTrace();
+                        if (item.name.equalsIgnoreCase("existing")) {
+                            json.keepExisting = true;
+                        } else {
+                            ItemStack stack = getItemStack(item.name);
+                            if (stack != ItemStack.EMPTY) {
+                                if (item.hide_old_tab) {
+                                    hidden_stacks.add(stack.getItem());
                                 }
-                            }
 
-                            /* Store the item for adding to the creative tab */
-                            tabItems.add(stack);
+                                /* Parse the Item NBT and apply it to the stack */
+                                if (item.nbt != null && !item.nbt.isEmpty()) {
+                                    try {
+                                        CompoundTag tag = TagParser.parseTag(item.nbt);
+                                        stack.setTag(tag);
+
+                                        /* Give the item a "Custom Name" if defined in NBT */
+                                        if (tag.contains("customName")) {
+                                            stack.setHoverName(Component.literal(tag.getString("customName")));
+                                        }
+                                    } catch (CommandSyntaxException e) {
+                                        ModConstants.logger.error("Failed to Process NBT for Item " + item.name, e);
+                                    }
+                                }
+
+                                /* Store the item for adding to the creative tab */
+                                tabItems.add(stack);
+                            }
                         }
                     });
 
                     /* Check if tab replaces an existing tab */
-                    if (json.replaces != null && !json.replaces.isEmpty()) {
-                        replaced_tabs.put(json.replaces, Pair.of(json, tabItems));
+                    if (json.replace) {
+                        replaced_tabs.put(fileToTab(location.getPath()), Pair.of(json, tabItems));
                     } else {
                         /* Create the actual tab and store it */
                         custom_tabs.add(creator.createTab(json, tabItems));
                     }
                 }
             } catch (Exception e) {
-                ModConstants.logger.error("Failed to process creative tab");
-                e.printStackTrace();
+                ModConstants.logger.error("Failed to process creative tab", e);
             }
         });
     }
@@ -118,8 +118,7 @@ public class CustomCreativeTabManager {
                DisabledTabsJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), DisabledTabsJsonHelper.class);
                disabled_tabs.addAll(json.disabled_tabs);
            } catch (Exception e) {
-               ModConstants.logger.error("Failed to process disabled tabs for " + location);
-               e.printStackTrace();
+               ModConstants.logger.error("Failed to process disabled tabs for " + location, e);
            }
        });
     }

@@ -1,6 +1,6 @@
 package me.hypherionmc.morecreativetabs.client;
 
-import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
 import me.hypherionmc.morecreativetabs.client.tabs.TabCreator;
 import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.fabricmc.fabric.impl.item.group.ItemGroupExtensions;
@@ -16,7 +16,7 @@ import java.util.List;
 public class FabricTabCreator implements TabCreator {
 
     @Override
-    public CreativeModeTab createTab(TabJsonHelper json, List<ItemStack> stacks) {
+    public CreativeModeTab createTab(CustomCreativeTab json, List<ItemStack> stacks) {
         ((ItemGroupExtensions) CreativeModeTab.TAB_BUILDING_BLOCKS).fabric_expandArray();
         return CreativeTabUtils.defaultTabCreator(CreativeModeTab.TABS.length  -1, json, stacks);
     }

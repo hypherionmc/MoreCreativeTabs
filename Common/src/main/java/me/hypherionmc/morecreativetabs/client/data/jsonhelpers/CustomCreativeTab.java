@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * @author HypherionSA
  * Gson Helper class for loading Custom Tabs
  */
-public class TabJsonHelper {
+public class CustomCreativeTab {
 
     public boolean tab_enabled;
     public String tab_name;
@@ -14,7 +14,8 @@ public class TabJsonHelper {
     public String tab_icon;
     public TabIcon tab_stack;
     public String tab_background;
-    public String replaces;
+    public boolean replace = false;
+    public boolean keepExisting = false;
     public ArrayList<TabItem> tab_items;
 
     public static class TabItem {

@@ -1,6 +1,7 @@
 package me.hypherionmc.morecreativetabs.util;
 
-import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.TabJsonHelper;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
+import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,20 +23,20 @@ public class CreativeTabUtils {
      * @param json - The JSON class of the loaded Tab JSON
      * @return - Returns an ItemStack or Empty ItemStack
      */
-    public static ItemStack makeTabIcon(TabJsonHelper json) {
+    public static ItemStack makeTabIcon(CustomCreativeTab json) {
         AtomicReference<ItemStack> icon = new AtomicReference<>(ItemStack.EMPTY);
-        TabJsonHelper.TabIcon tabIcon = new TabJsonHelper.TabIcon();
+        CustomCreativeTab.TabIcon tabIcon = new CustomCreativeTab.TabIcon();
 
         if (json.tab_stack != null) {
             tabIcon = json.tab_stack;
         } else if (json.tab_icon != null) {
             // WARNING: This is just to add support for the old format... To be removed
-            tabIcon = new TabJsonHelper.TabIcon();
+            tabIcon = new CustomCreativeTab.TabIcon();
             tabIcon.name = json.tab_icon;
         }
 
         /* Resolve the Icon from the Item Registry */
-        TabJsonHelper.TabIcon finalTabIcon = tabIcon;
+        CustomCreativeTab.TabIcon finalTabIcon = tabIcon;
         ItemStack stack = getItemStack(tabIcon.name);
 
         if (!stack.isEmpty()) {
@@ -81,7 +83,7 @@ public class CreativeTabUtils {
      * @param tabItems - The items to add to the tab
      * @return - An initialized Creative tab with all the items it should contain
      */
-    public static CreativeModeTab defaultTabCreator(int index, TabJsonHelper json, List<ItemStack> tabItems) {
+    public static CreativeModeTab defaultTabCreator(int index, CustomCreativeTab json, List<ItemStack> tabItems) {
         return new CreativeModeTab(index, prefix(json.tab_name)) {
 
             /**
@@ -112,5 +114,30 @@ public class CreativeTabUtils {
                 itemStacks.addAll(tabItems);
             }
         };
+    }
+
+    /**
+     * Convert Resource Location into String for processing replacement tabs
+     * @param input - The PATH section of a ResourceLocation
+     * @return - The tab name in format `itemGroup.name` or `name`
+     */
+    public static String fileToTab(String input) {
+        input = input.replace("morecreativetabs/", "");
+        input = input.replace("morecreativetabs", "");
+        input = input.replace(".json", "");
+
+        return input;
+    }
+
+    /**
+     * Helper method to detect if a Custom Tab is a replacement of an existing tab
+     * @param tabName - The "recipeFolderName" of the tab to find
+     * @return - An optional containing the tab data
+     */
+    public static Optional<Pair<CustomCreativeTab, List<ItemStack>>> replacementTab(String tabName) {
+        if (CustomCreativeTabManager.replaced_tabs.containsKey(tabName)) {
+            return Optional.of(CustomCreativeTabManager.replaced_tabs.get(tabName));
+        }
+        return Optional.empty();
     }
 }
