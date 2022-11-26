@@ -3,8 +3,8 @@ package me.hypherionmc.morecreativetabs.client.tabs;
 import com.google.gson.Gson;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.morecreativetabs.ModConstants;
-import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -44,6 +44,7 @@ public class CustomCreativeTabManager {
     /* A fixed backup of all creative tabs, before custom ones are added */
     public static CreativeModeTab[] tabs_before;
 
+    /* Tabs that replace existing, Non-Custom tabs */
     public static HashMap<String, Pair<CustomCreativeTab, List<ItemStack>>> replaced_tabs = new HashMap<>();
 
     /**
