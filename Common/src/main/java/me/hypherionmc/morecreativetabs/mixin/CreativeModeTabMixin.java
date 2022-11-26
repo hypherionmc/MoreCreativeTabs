@@ -65,5 +65,4 @@ public abstract class CreativeModeTabMixin {
         }
         instance.fillItemCategory(tab, stacks);
     }
-
 }
