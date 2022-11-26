@@ -3,6 +3,7 @@ package me.hypherionmc.morecreativetabs.mixin;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -11,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -25,7 +26,7 @@ public abstract class CreativeModeTabMixin {
 
     @Inject(at = @At("RETURN"), method = "getDisplayName", cancellable = true)
     public void getDisplayName(CallbackInfoReturnable<Component> cir) {
-        CreativeTabUtils.replacementTab(this.getRecipeFolderName().replace(".", "_")).ifPresent(tabData -> {
+        CreativeTabUtils.replacementTab(convertName(getRecipeFolderName())).ifPresent(tabData -> {
             cir.setReturnValue(Component.translatable("itemGroup." + CreativeTabUtils.prefix(tabData.getLeft().tab_name)));
         });
 
@@ -36,7 +37,7 @@ public abstract class CreativeModeTabMixin {
 
     @Inject(at = @At("RETURN"), method = "getIconItem", cancellable = true)
     public void injectIcon(CallbackInfoReturnable<ItemStack> cir) {
-        CreativeTabUtils.replacementTab(this.getRecipeFolderName().replace(".", "_")).ifPresent(tabData -> {
+        CreativeTabUtils.replacementTab(convertName(getRecipeFolderName())).ifPresent(tabData -> {
             ItemStack stack = CreativeTabUtils.makeTabIcon(tabData.getLeft());
             if (!stack.isEmpty()) {
                 cir.setReturnValue(stack);
@@ -44,23 +45,34 @@ public abstract class CreativeModeTabMixin {
         });
     }
 
-    @Redirect(method = "fillItemList", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;fillItemCategory(Lnet/minecraft/world/item/CreativeModeTab;Lnet/minecraft/core/NonNullList;)V"))
-    public void injectItems(Item instance, CreativeModeTab tab, NonNullList<ItemStack> stacks) {
+    @Inject(method = "fillItemList", at = @At("HEAD"), cancellable = true)
+    public void injectItems(NonNullList<ItemStack> stacks, CallbackInfo ci) {
+        CreativeModeTab tab = (CreativeModeTab) (Object)this;
         if (!CustomCreativeTabManager.custom_tabs.contains(tab)) {
-            CreativeTabUtils.replacementTab(tab.getRecipeFolderName().replace(".", "_")).ifPresentOrElse(tabData -> {
+            ci.cancel();
+            CreativeTabUtils.replacementTab(convertName(tab.getRecipeFolderName())).ifPresentOrElse(tabData -> {
                 if (tabData.getLeft().keepExisting) {
-                    instance.fillItemCategory(tab, stacks);
+                    fillTabItems(tab, stacks);
                 }
 
-                CreativeTabUtils.getReplacementItem(tab.getRecipeFolderName().replace(".", "_"), instance).ifPresent(item -> {
-                    stacks.add(new ItemStack(item));
-                    instance.fillItemCategory(tab, stacks);
-                });
-            }, () -> {
-                if (!CustomCreativeTabManager.disabled_tabs.contains(tab.getRecipeFolderName()) && !CustomCreativeTabManager.hidden_stacks.contains(instance)) {
-                    instance.fillItemCategory(tab, stacks);
-                }
-            });
+                stacks.addAll(tabData.getRight());
+            }, () -> fillTabItems(tab, stacks));
         }
+    }
+
+    private void fillTabItems(CreativeModeTab tab, NonNullList<ItemStack> existing) {
+        for (Item $$1 : Registry.ITEM) {
+            if (!CustomCreativeTabManager.custom_tabs.contains(tab)) {
+                if (!CustomCreativeTabManager.disabled_tabs.contains(tab.getRecipeFolderName()) && !CustomCreativeTabManager.hidden_stacks.contains($$1)) {
+                    $$1.fillItemCategory(tab, existing);
+                }
+            } else {
+                $$1.fillItemCategory(tab, existing);
+            }
+        }
+    }
+
+    private String convertName(String tabName) {
+        return tabName.replace(".", "_");
     }
 }

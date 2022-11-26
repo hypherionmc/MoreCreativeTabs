@@ -45,7 +45,7 @@ public class CustomCreativeTabManager {
     public static CreativeModeTab[] tabs_before;
 
     /* Tabs that replace existing, Non-Custom tabs */
-    public static HashMap<String, Pair<CustomCreativeTab, List<Item>>> replaced_tabs = new HashMap<>();
+    public static HashMap<String, Pair<CustomCreativeTab, List<ItemStack>>> replaced_tabs = new HashMap<>();
 
     /**
      * Load and process the resource/data pack
@@ -58,8 +58,7 @@ public class CustomCreativeTabManager {
 
             try (InputStream stream = resource.open()) {
                 CustomCreativeTab json = new Gson().fromJson(new InputStreamReader(stream), CustomCreativeTab.class);
-                ArrayList<ItemStack> itemStacks = new ArrayList<>();
-                ArrayList<Item> tabItems = new ArrayList<>();
+                ArrayList<ItemStack> tabItems = new ArrayList<>();
 
                 /* Check if the tab is enabled and should be loaded */
                 if (json.tab_enabled) {
@@ -91,20 +90,17 @@ public class CustomCreativeTabManager {
                                 }
 
                                 /* Store the item for adding to the creative tab */
-                                itemStacks.add(stack);
-                                tabItems.add(stack.getItem());
+                                tabItems.add(stack);
                             }
                         }
                     });
 
                     /* Check if tab replaces an existing tab */
                     if (json.replace) {
-                        itemStacks.clear();
                         replaced_tabs.put(fileToTab(location.getPath()), Pair.of(json, tabItems));
                     } else {
                         /* Create the actual tab and store it */
-                        tabItems.clear();
-                        custom_tabs.add(creator.createTab(json, itemStacks));
+                        custom_tabs.add(creator.createTab(json, tabItems));
                     }
                 }
             } catch (Exception e) {
