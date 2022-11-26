@@ -22,8 +22,7 @@
       ]
     },
     "mixins": [
-      "morecreativetabs.mixins.json",
-      "morecreativetabs_common.mixins.json"
+      "morecreativetabs.mixins.json"
     ],
     "accessWidener": "morecreativetabs.accesswidener",
     "depends": {

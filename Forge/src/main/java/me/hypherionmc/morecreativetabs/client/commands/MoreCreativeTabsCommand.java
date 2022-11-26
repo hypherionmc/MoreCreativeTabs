@@ -28,6 +28,7 @@ public class MoreCreativeTabsCommand {
                     return 1;
                 }))).then(Commands.literal("reloadTabs").executes(context -> {
                     PlatformServices.helper.reloadTabs();
+                    context.getSource().sendSuccess(Component.literal("Reloaded Custom Tabs"), true);
                     return 1;
                 }))
         );

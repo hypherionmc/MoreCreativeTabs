@@ -33,6 +33,10 @@ loom {
             runDir("run")
         }
     }
+
+    mixin {
+        defaultRefmapName = "morecreativetabs.refmap.json"
+    }
 }
 
 processResources {
