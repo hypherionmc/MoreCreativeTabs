@@ -48,21 +48,19 @@ public abstract class CreativeModeTabMixin {
     public void injectItems(Item instance, CreativeModeTab tab, NonNullList<ItemStack> stacks) {
         if (!CustomCreativeTabManager.custom_tabs.contains(tab)) {
             CreativeTabUtils.replacementTab(tab.getRecipeFolderName().replace(".", "_")).ifPresentOrElse(tabData -> {
-                if (!tabData.getLeft().keepExisting) {
-                    stacks.clear();
+                if (tabData.getLeft().keepExisting) {
+                    instance.fillItemCategory(tab, stacks);
                 }
 
-                tabData.getRight().forEach(itemStack -> {
-                    if (!stacks.contains(itemStack)) {
-                        stacks.add(itemStack);
-                    }
+                CreativeTabUtils.getReplacementItem(tab.getRecipeFolderName().replace(".", "_"), instance).ifPresent(item -> {
+                    stacks.add(new ItemStack(item));
+                    instance.fillItemCategory(tab, stacks);
                 });
             }, () -> {
-                if (CustomCreativeTabManager.disabled_tabs.contains(tab.getRecipeFolderName()) || CustomCreativeTabManager.hidden_stacks.contains(instance)) {
-                    stacks.clear();
+                if (!CustomCreativeTabManager.disabled_tabs.contains(tab.getRecipeFolderName()) && !CustomCreativeTabManager.hidden_stacks.contains(instance)) {
+                    instance.fillItemCategory(tab, stacks);
                 }
             });
         }
-        instance.fillItemCategory(tab, stacks);
     }
 }

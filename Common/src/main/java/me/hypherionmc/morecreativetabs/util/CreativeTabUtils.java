@@ -134,10 +134,24 @@ public class CreativeTabUtils {
      * @param tabName - The "recipeFolderName" of the tab to find
      * @return - An optional containing the tab data
      */
-    public static Optional<Pair<CustomCreativeTab, List<ItemStack>>> replacementTab(String tabName) {
+    public static Optional<Pair<CustomCreativeTab, List<Item>>> replacementTab(String tabName) {
         if (CustomCreativeTabManager.replaced_tabs.containsKey(tabName)) {
             return Optional.of(CustomCreativeTabManager.replaced_tabs.get(tabName));
         }
         return Optional.empty();
+    }
+
+    /**
+     * Helper Method to swap out items in existing tabs, with custom ones
+     * @param tabName - The "recipeFolderName" of the tab to find
+     * @param item - The item to check against
+     * @return - An optional containing the tab item
+     */
+    public static Optional<Item> getReplacementItem(String tabName, Item item) {
+        AtomicReference<Optional<Item>> returnValue = new AtomicReference<>(Optional.empty());
+        replacementTab(tabName).ifPresent(tabData -> {
+            returnValue.set(tabData.getRight().stream().filter(itm -> itm == item).findFirst());
+        });
+        return returnValue.get();
     }
 }
