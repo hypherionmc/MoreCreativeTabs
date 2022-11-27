@@ -62,7 +62,7 @@ public abstract class CreativeModeTabMixin {
     @Inject(method = "fillItemList", at = @At("HEAD"), cancellable = true)
     public void injectItems(NonNullList<ItemStack> stacks, CallbackInfo ci) {
         CreativeModeTab tab = (CreativeModeTab) (Object)this;
-        if (!CustomCreativeTabManager.custom_tabs.contains(tab)) {
+        if (!CustomCreativeTabManager.custom_tabs.contains(tab) && tab != CreativeModeTab.TAB_SEARCH) {
             ci.cancel();
             CreativeTabUtils.replacementTab(convertName(tab.getRecipeFolderName())).ifPresentOrElse(tabData -> {
                 if (tabData.getLeft().keepExisting) {
