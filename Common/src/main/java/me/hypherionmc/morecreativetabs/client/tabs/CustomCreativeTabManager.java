@@ -103,7 +103,7 @@ public class CustomCreativeTabManager {
 
                     /* Check if tab replaces an existing tab */
                     if (json.replace) {
-                        replaced_tabs.put(fileToTab(location.getPath()), Pair.of(json, tabItems));
+                        replaced_tabs.put(fileToTab(location.getPath()).toLowerCase(), Pair.of(json, tabItems));
                     } else {
                         /* Create the actual tab and store it */
                         custom_tabs.add(creator.createTab(json, tabItems));

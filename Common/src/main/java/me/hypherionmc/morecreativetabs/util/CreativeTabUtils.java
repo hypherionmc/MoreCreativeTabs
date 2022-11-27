@@ -139,15 +139,9 @@ public class CreativeTabUtils {
         if (CustomCreativeTabManager.replaced_tabs.containsKey(tabName)) {
             return Optional.of(CustomCreativeTabManager.replaced_tabs.get(tabName));
         }
-        return Optional.empty();
-    }
-
-    public static int firstFreeId(Set<Integer> values) {
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            if (!values.contains(i)) {
-                return i;
-            }
+        if (CustomCreativeTabManager.replaced_tabs.containsKey(tabName.toLowerCase())) {
+            return Optional.of(CustomCreativeTabManager.replaced_tabs.get(tabName));
         }
-        return 0;
+        return Optional.empty();
     }
 }
