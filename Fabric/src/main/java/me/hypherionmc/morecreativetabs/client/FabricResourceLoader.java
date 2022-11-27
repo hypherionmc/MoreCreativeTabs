@@ -39,11 +39,19 @@ public class FabricResourceLoader implements SimpleSynchronousResourceReloadList
         ModConstants.logger.info("Checking for custom creative tabs");
         CustomCreativeTabManager.clearTabs();
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs", path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs"));
+        Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs",
+                path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs")
+                        && !path.getPath().equals("ordered_tabs"));
+
         Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
+        Map<ResourceLocation, Resource> orderedTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("ordered_tabs.json"));
 
         if (!disabledTabs.isEmpty()) {
             CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
+        }
+
+        if (!orderedTabs.isEmpty()) {
+            CustomCreativeTabManager.loadOrderedTabs(orderedTabs);
         }
 
         CustomCreativeTabManager.loadEntries(customTabs, new FabricTabCreator());

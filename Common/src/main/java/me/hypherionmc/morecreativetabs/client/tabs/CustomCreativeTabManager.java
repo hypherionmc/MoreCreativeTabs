@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
+import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.OrderedTabs;
 import me.hypherionmc.morecreativetabs.mixin.CreativeModeTabAccessor;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.minecraft.nbt.CompoundTag;
@@ -39,6 +40,9 @@ public class CustomCreativeTabManager {
 
     /* List of Disabled Tabs */
     public static Set<String> disabled_tabs = new HashSet<>();
+
+    /* List of Reordered Tabs */
+    public static Set<String> reordered_tabs = new LinkedHashSet<>();
 
     /* Should the Name or Registry name of the tab be showed */
     public static boolean showNames = false;
@@ -129,28 +133,72 @@ public class CustomCreativeTabManager {
     }
 
     /**
+     * Load ordered tabs for later processing
+     */
+    public static void loadOrderedTabs(Map<ResourceLocation, Resource> resourceMap) {
+        resourceMap.forEach((location, resource) -> {
+            ModConstants.logger.info("Processing " + location.toString());
+            try (InputStream stream = resource.open()) {
+                OrderedTabs tabs = new Gson().fromJson(new InputStreamReader(stream), OrderedTabs.class);
+                reordered_tabs.addAll(tabs.tabs);
+            } catch (Exception e) {
+                ModConstants.logger.error("Failed to process ordered tabs for " + location, e);
+            }
+        });
+    }
+
+    /**
      * This function is used to filter out disabled tabs
      */
     private static void reOrderTabs() {
+        List<CreativeModeTab> oldTabs = Arrays.stream(CreativeModeTab.TABS).toList();
         List<CreativeModeTab> filteredTabs = new ArrayList<>();
         AtomicInteger id = new AtomicInteger(0);
+        boolean addExisting = false;
 
-        for (CreativeModeTab tab : CreativeModeTab.TABS) {
-            if (!disabled_tabs.contains(tab.getRecipeFolderName())) {
-                ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
-                filteredTabs.add(tab);
-            }
-
-            // Don't disable Survival Inventory or Custom Tabs
-            if (tab == CreativeModeTab.TAB_INVENTORY || custom_tabs.contains(tab)) {
-                if (!filteredTabs.contains(tab)) {
-                    ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
-                    filteredTabs.add(tab);
+        if (!reordered_tabs.isEmpty()) {
+            for (String orderedTab : reordered_tabs) {
+                if (!orderedTab.equalsIgnoreCase("existing")) {
+                    oldTabs.stream()
+                            .filter(tab -> tab.getRecipeFolderName().equals(orderedTab))
+                            .findFirst().ifPresent(pTab -> processTab(pTab, id, filteredTabs));
+                } else {
+                    addExisting = true;
                 }
+            }
+        } else {
+            addExisting = true;
+        }
+
+        if (addExisting) {
+            for (CreativeModeTab tab : oldTabs) {
+                processTab(tab, id, filteredTabs);
             }
         }
 
+        // Don't disable the Survival Inventory
+        if (!filteredTabs.contains(CreativeModeTab.TAB_INVENTORY)) {
+            ((CreativeModeTabAccessor) CreativeModeTab.TAB_INVENTORY).setId(id.getAndIncrement());
+            filteredTabs.add(CreativeModeTab.TAB_INVENTORY);
+        }
+
+        // Don't disable Custom Tabs
+        custom_tabs.forEach(tab -> {
+            if (!filteredTabs.contains(tab)) {
+                ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
+                filteredTabs.add(tab);
+            }
+        });
+
         PlatformServices.helper.setNewTabs(filteredTabs.toArray(new CreativeModeTab[0]));
+    }
+
+    // Just used to remove duplicate code
+    private static void processTab(CreativeModeTab tab, AtomicInteger id, List<CreativeModeTab> filteredTabs) {
+        if (!disabled_tabs.contains(tab.getRecipeFolderName()) && !filteredTabs.contains(tab)) {
+            ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
+            filteredTabs.add(tab);
+        }
     }
 
     /**
@@ -159,6 +207,7 @@ public class CustomCreativeTabManager {
     public static void clearTabs() {
         hidden_stacks.clear();
         disabled_tabs.clear();
+        reordered_tabs.clear();
         PlatformServices.helper.setNewTabs(tabs_before);
         custom_tabs.clear();
         replaced_tabs.clear();
