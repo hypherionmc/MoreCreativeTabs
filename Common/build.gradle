@@ -19,6 +19,7 @@ minecraft {
             }
         }
     }
+    accessWideners(project.file("src/main/resources/morecreativetabs.accesswidener"))
 }
 
 dependencies {

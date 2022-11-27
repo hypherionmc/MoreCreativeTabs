@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.CustomCreativeTab;
 import me.hypherionmc.morecreativetabs.client.data.jsonhelpers.DisabledTabsJsonHelper;
+import me.hypherionmc.morecreativetabs.mixin.CreativeModeTabAccessor;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static me.hypherionmc.morecreativetabs.util.CreativeTabUtils.fileToTab;
 import static me.hypherionmc.morecreativetabs.util.CreativeTabUtils.getItemStack;
@@ -107,6 +109,8 @@ public class CustomCreativeTabManager {
                 ModConstants.logger.error("Failed to process creative tab", e);
             }
         });
+
+        reOrderTabs();
     }
 
     /**
@@ -122,6 +126,31 @@ public class CustomCreativeTabManager {
                ModConstants.logger.error("Failed to process disabled tabs for " + location, e);
            }
        });
+    }
+
+    /**
+     * This function is used to filter out disabled tabs
+     */
+    private static void reOrderTabs() {
+        List<CreativeModeTab> filteredTabs = new ArrayList<>();
+        AtomicInteger id = new AtomicInteger(0);
+
+        for (CreativeModeTab tab : CreativeModeTab.TABS) {
+            if (!disabled_tabs.contains(tab.getRecipeFolderName())) {
+                ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
+                filteredTabs.add(tab);
+            }
+
+            // Don't disable Survival Inventory or Custom Tabs
+            if (tab == CreativeModeTab.TAB_INVENTORY || custom_tabs.contains(tab)) {
+                if (!filteredTabs.contains(tab)) {
+                    ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
+                    filteredTabs.add(tab);
+                }
+            }
+        }
+
+        PlatformServices.helper.setNewTabs(filteredTabs.toArray(new CreativeModeTab[0]));
     }
 
     /**

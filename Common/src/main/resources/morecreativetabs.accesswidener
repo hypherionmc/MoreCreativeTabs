@@ -1,2 +1,3 @@
 accessWidener	v1	named
 mutable field net/minecraft/world/item/CreativeModeTab TABS [Lnet/minecraft/world/item/CreativeModeTab;
+mutable field net/minecraft/world/item/CreativeModeTab id I

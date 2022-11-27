@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CreativeTabUtils {
@@ -139,5 +140,14 @@ public class CreativeTabUtils {
             return Optional.of(CustomCreativeTabManager.replaced_tabs.get(tabName));
         }
         return Optional.empty();
+    }
+
+    public static int firstFreeId(Set<Integer> values) {
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            if (!values.contains(i)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

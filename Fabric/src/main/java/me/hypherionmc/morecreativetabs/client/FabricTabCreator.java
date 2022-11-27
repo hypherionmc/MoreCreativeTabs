@@ -18,6 +18,6 @@ public class FabricTabCreator implements TabCreator {
     @Override
     public CreativeModeTab createTab(CustomCreativeTab json, List<ItemStack> stacks) {
         ((ItemGroupExtensions) CreativeModeTab.TAB_BUILDING_BLOCKS).fabric_expandArray();
-        return CreativeTabUtils.defaultTabCreator(CreativeModeTab.TABS.length  -1, json, stacks);
+        return CreativeTabUtils.defaultTabCreator(CreativeModeTab.TABS.length - 1, json, stacks);
     }
 }
