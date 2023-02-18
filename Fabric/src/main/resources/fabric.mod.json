@@ -22,13 +22,13 @@
       ]
     },
     "mixins": [
-      "morecreativetabs.mixins.json"
+      "morecreativetabs.fabric.mixins.json"
     ],
     "accessWidener": "morecreativetabs.accesswidener",
     "depends": {
       "fabricloader": ">=0.14",
       "fabric": "*",
-      "minecraft": "1.19.x",
+      "minecraft": "1.19.3",
       "java": ">=17"
     }
   }
