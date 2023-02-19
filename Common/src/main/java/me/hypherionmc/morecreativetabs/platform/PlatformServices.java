@@ -1,7 +1,8 @@
 package me.hypherionmc.morecreativetabs.platform;
 
 import me.hypherionmc.morecreativetabs.ModConstants;
-import me.hypherionmc.morecreativetabs.platform.services.IFabricHelper;
+import me.hypherionmc.morecreativetabs.platform.services.IPlatformHelper;
+import me.hypherionmc.morecreativetabs.platform.services.ITabHelper;
 
 import java.util.ServiceLoader;
 
@@ -11,7 +12,8 @@ import java.util.ServiceLoader;
  */
 public class PlatformServices {
 
-    public static final IFabricHelper FABRIC_HELPER = load(IFabricHelper.class);
+    public static final ITabHelper FABRIC_HELPER = load(ITabHelper.class);
+    public static final IPlatformHelper COMMON_HELPER = load(IPlatformHelper.class);
 
     public static <T> T load(Class<T> clazz) {
         final T loadedService = ServiceLoader.load(clazz)

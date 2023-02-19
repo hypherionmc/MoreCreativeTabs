@@ -200,10 +200,12 @@ public class CustomCreativeTabRegistry {
      * Clear all cached data for reloading
      */
     public static void clearTabs() {
-        custom_tabs.clear();
+        hidden_stacks.clear();
+        disabled_tabs.clear();
+        reordered_tabs.clear();
         current_tabs = tabs_before;
         PlatformServices.FABRIC_HELPER.updateCreativeTabs(current_tabs);
-        tab_items.clear();
-        disabled_tabs.clear();
+        custom_tabs.clear();
+        replaced_tabs.clear();
     }
 }

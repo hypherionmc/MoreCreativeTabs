@@ -8,9 +8,9 @@
   "client": [
     "CreativeModeInventoryScreenMixin",
     "CreativeModeTabMixin",
+    "ItemStackMixin",
     "accessors.CreativeModeTabAccessor",
-    "accessors.CreativeModeTabsAccessor",
-    "ItemStackMixin"
+    "accessors.CreativeModeTabsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
