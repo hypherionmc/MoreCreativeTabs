@@ -13,6 +13,7 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "morecreativetabs.refmap.json"
 }
 

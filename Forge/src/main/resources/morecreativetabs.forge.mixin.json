@@ -10,10 +10,12 @@
     "ForgeCreativeModeTabRegistryMixin",
     "ForgeCreativeTabsMixin",
     "ForgeCreativeTabsScreenPageMixin",
+    "ForgeReloadableResourceManagerMixin",
     "accessor.ForgeCreativeModeTabRegistryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "morecreativetabs.refmap.json"
 }
 

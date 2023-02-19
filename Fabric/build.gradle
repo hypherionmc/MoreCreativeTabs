@@ -47,7 +47,7 @@ processResources {
     }
 
     filesMatching('*.mixins.json') {
-        expand "refmap_target": "morecreativetabs."
+        expand "refmap_target": "${archivesBaseName}-"
     }
 }
 

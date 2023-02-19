@@ -27,7 +27,7 @@ public class MoreCreativeTabsCommand {
                             context.getSource().sendSuccess(enabled ? Component.literal("Showing tab registry names") : Component.literal("Showing tab names"), true);
                             return 1;
                         }))).then(Commands.literal("reloadTabs").executes(context -> {
-                    MoreCreativeTabs.reloadTabs();
+                    MoreCreativeTabs.reloadResources();
                     context.getSource().sendSuccess(Component.literal("Reloaded Custom Tabs"), true);
                     return 1;
                 }))
