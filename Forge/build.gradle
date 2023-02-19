@@ -1,17 +1,31 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
 plugins {
-    id 'java'
-    id 'eclipse'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
     id "com.modrinth.minotaur" version "2.+"
     id "me.hypherionmc.cursegradle" version "2.0.1"
 }
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "${mod_name}-forge-${minecraft_version}"
 
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
+    config "${mod_id}.mixin.json"
 }
 
 minecraft {
@@ -25,7 +39,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            args "-mixin.config=${mod_id}.forge.mixins.json"
+            args "-mixin.config=${mod_id}.mixin.json"
             ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Client'
             property 'mixin.env.remapRefMap', 'true'

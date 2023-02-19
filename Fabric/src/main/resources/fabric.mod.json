@@ -18,11 +18,12 @@
     "environment": "client",
     "entrypoints": {
       "client": [
-        "me.hypherionmc.morecreativetabs.client.MoreCreativeTabsClient"
+        "me.hypherionmc.morecreativetabs.client.MoreCreativeTabsFabric"
       ]
     },
     "mixins": [
-      "morecreativetabs.fabric.mixins.json"
+      "morecreativetabs.mixin.json",
+      "morecreativetabs.fabric.mixin.json"
     ],
     "accessWidener": "morecreativetabs.accesswidener",
     "depends": {

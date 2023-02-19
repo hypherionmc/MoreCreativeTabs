@@ -34,12 +34,6 @@ subprojects {
         }
     }
 
-    sourcesJar {
-        from(rootProject.file("LICENSE")) {
-            rename { "${it}_${mod_name}" }
-        }
-    }
-
     repositories {
         mavenCentral()
         maven {
