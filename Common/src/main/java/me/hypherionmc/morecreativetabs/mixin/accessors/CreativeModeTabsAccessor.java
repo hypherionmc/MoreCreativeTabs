@@ -7,6 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
+/**
+ * @author HypherionSA
+ * Helper class to access private values from CreativeModeTabs
+ */
 @Mixin(CreativeModeTabs.class)
 public interface CreativeModeTabsAccessor {
 

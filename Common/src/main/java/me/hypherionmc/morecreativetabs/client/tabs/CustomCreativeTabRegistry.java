@@ -22,10 +22,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static me.hypherionmc.morecreativetabs.utils.CreativeTabUtils.*;
 
+/**
+ * @author HypherionSA
+ * Class to manage all custom tabs and items
+ */
 public class CustomCreativeTabRegistry {
 
     public static final Gson GSON = new Gson();
@@ -33,21 +36,33 @@ public class CustomCreativeTabRegistry {
     /* Items to remove from their old tabs */
     public static Set<Item> hidden_stacks = new HashSet<>();
 
-    private static Set<CreativeModeTab> custom_tabs = new HashSet<>();
-    public static List<CreativeModeTab> tabs_before;
-    public static List<CreativeModeTab> current_tabs = new ArrayList<>();
-    public static HashMap<CreativeModeTab, List<ItemStack>> tab_items = new LinkedHashMap<>();
+    /* List of Custom Defined tabs */
+    public static Set<CreativeModeTab> custom_tabs = new HashSet<>();
 
+    /* List of Disabled Tabs */
     public static Set<String> disabled_tabs = new HashSet<>();
 
     /* List of Reordered Tabs */
     public static Set<String> reordered_tabs = new LinkedHashSet<>();
 
+    /* Should the Name or Registry name of the tab be showed */
     public static boolean showNames = false;
+
+    /* A fixed backup of all creative tabs, before custom ones are added */
+    public static List<CreativeModeTab> tabs_before;
 
     /* Tabs that replace existing, Non-Custom tabs */
     public static HashMap<String, Pair<CustomCreativeTab, List<ItemStack>>> replaced_tabs = new HashMap<>();
 
+    /* Holds the items to display in Custom Tabs */
+    public static HashMap<CreativeModeTab, List<ItemStack>> tab_items = new HashMap<>();
+
+    public static List<CreativeModeTab> current_tabs = new LinkedList<>();
+
+    /**
+     * Load and process the resource/data pack
+     * @param entries - The found entries
+     */
     public static void processEntries(Map<ResourceLocation, Resource> entries) {
         entries.forEach((location, resource) -> {
             ModConstants.logger.info("Processing {}", location.toString());
@@ -56,8 +71,10 @@ public class CustomCreativeTabRegistry {
                 CustomCreativeTab json = GSON.fromJson(new InputStreamReader(stream), CustomCreativeTab.class);
                 ArrayList<ItemStack> tabItems = new ArrayList<>();
 
+                /* Check if the tab is enabled and should be loaded */
                 if (json.tab_enabled) {
 
+                    /* Loop over all the Item Stack entries */
                     json.tab_items.forEach(item -> {
                         if (item.name.equalsIgnoreCase("existing"))
                             json.keepExisting = true;
@@ -68,6 +85,7 @@ public class CustomCreativeTabRegistry {
                                 hidden_stacks.add(stack.getItem());
                             }
 
+                            /* Parse the Item NBT and apply it to the stack */
                             if (item.nbt != null && !item.nbt.isEmpty()) {
                                 try {
                                     CompoundTag tag = TagParser.parseTag(item.nbt);
@@ -87,9 +105,11 @@ public class CustomCreativeTabRegistry {
                         }
                     });
 
+                    /* Check if tab replaces an existing tab */
                     if (json.replace) {
                         replaced_tabs.put(fileToTab(location.getPath()).toLowerCase(), Pair.of(json, tabItems));
                     } else {
+                        /* Create the actual tab and store it */
                         CreativeModeTab.Builder builder = new CreativeModeTab.Builder(null, -1);
                         builder.title(Component.translatable(prefix(json.tab_name)));
                         builder.icon(() -> makeTabIcon(json));
@@ -143,10 +163,12 @@ public class CustomCreativeTabRegistry {
         });
     }
 
+    /**
+     * This function is used to filter out disabled tabs and apply order to the tabs
+     */
     private static void reorderTabs() {
         List<CreativeModeTab> oldTabs = tabs_before;
         List<CreativeModeTab> filteredTabs = new ArrayList<>();
-        AtomicInteger id = new AtomicInteger(0);
         boolean addExisting = false;
 
         if (!reordered_tabs.isEmpty()) {
@@ -154,7 +176,7 @@ public class CustomCreativeTabRegistry {
                 if (!orderedTab.equalsIgnoreCase("existing")) {
                     oldTabs.stream()
                             .filter(tab -> getTabKey(((CreativeModeTabAccessor)tab).getInternalDisplayName()).equals(orderedTab))
-                            .findFirst().ifPresent(pTab -> processTab(pTab, id, filteredTabs));
+                            .findFirst().ifPresent(pTab -> processTab(pTab, filteredTabs));
                 } else {
                     addExisting = true;
                 }
@@ -166,31 +188,29 @@ public class CustomCreativeTabRegistry {
 
         if (addExisting) {
             for (CreativeModeTab tab : oldTabs) {
-                processTab(tab, id, filteredTabs);
+                processTab(tab, filteredTabs);
             }
         }
 
         // Don't disable the Survival Inventory
         if (!filteredTabs.contains(CreativeModeTabsAccessor.getInventoryTab())) {
-            //((CreativeModeTabAccessor) CreativeModeTabsAccessor.getInventoryTab()).setColumn(id.getAndIncrement());
             filteredTabs.add(CreativeModeTabsAccessor.getInventoryTab());
         }
 
         // Don't disable Custom Tabs
         custom_tabs.forEach(tab -> {
             if (!filteredTabs.contains(tab)) {
-                //((CreativeModeTabAccessor) tab).setColumn(id.getAndIncrement());
                 filteredTabs.add(tab);
             }
         });
 
         current_tabs = filteredTabs;
 
-        PlatformServices.FABRIC_HELPER.updateCreativeTabs(current_tabs);
+        PlatformServices.TAB_HELPER.updateCreativeTabs(current_tabs);
     }
 
     // Just used to remove duplicate code
-    private static void processTab(CreativeModeTab tab, AtomicInteger id, List<CreativeModeTab> filteredTabs) {
+    private static void processTab(CreativeModeTab tab, List<CreativeModeTab> filteredTabs) {
         if (!disabled_tabs.contains(getTabKey(((CreativeModeTabAccessor)tab).getInternalDisplayName())) && !filteredTabs.contains(tab)) {
             filteredTabs.add(tab);
         }
@@ -204,7 +224,7 @@ public class CustomCreativeTabRegistry {
         disabled_tabs.clear();
         reordered_tabs.clear();
         current_tabs = tabs_before;
-        PlatformServices.FABRIC_HELPER.updateCreativeTabs(current_tabs);
+        PlatformServices.TAB_HELPER.updateCreativeTabs(current_tabs);
         custom_tabs.clear();
         replaced_tabs.clear();
     }

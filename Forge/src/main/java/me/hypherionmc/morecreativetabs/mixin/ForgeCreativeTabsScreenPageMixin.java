@@ -15,6 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author HypherionSA
+ * Modifications to the Forge Inventory Tabs pagination system
+ */
 @Mixin(CreativeTabsScreenPage.class)
 public class ForgeCreativeTabsScreenPageMixin {
 
@@ -29,6 +33,9 @@ public class ForgeCreativeTabsScreenPageMixin {
     @Mutable
     @Shadow(remap = false) @Final private List<CreativeModeTab> tabs;
 
+    /**
+     * Increase the max amount of tabs per page to 14 from 10
+     */
     @Inject(method = "<init>", at = @At(value = "RETURN"), remap = false)
     private void injectVisibleTabs(List<CreativeModeTab> tabs, CallbackInfo ci) {
         this.tabs = tabs;
@@ -47,11 +54,17 @@ public class ForgeCreativeTabsScreenPageMixin {
         }
     }
 
+    /**
+     * Check if the tab is in the top row. Modified to exclude ALWAYS SHOWN tabs
+     */
     @Inject(method = "isTop", at = @At("HEAD"), cancellable = true, remap = false)
     private void injectIsTop(CreativeModeTab tab, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(this.topTabs.contains(tab));
     }
 
+    /**
+     * Check the tab location. Modified to exclude ALWAYS SHOWN tabs
+     */
     @Inject(method = "getColumn", at = @At("HEAD"), cancellable = true, remap = false)
     private void injectGetColumn(CreativeModeTab tab, CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(this.topTabs.contains(tab) ? this.topTabs.indexOf(tab) : this.bottomTabs.indexOf(tab));

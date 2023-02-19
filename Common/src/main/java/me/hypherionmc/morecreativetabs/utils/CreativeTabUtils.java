@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * @author HypherionSA
+ * Utility class to help when working with creative tabs
+ */
 public class CreativeTabUtils {
 
     /**

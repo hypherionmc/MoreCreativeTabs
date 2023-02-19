@@ -7,6 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
+/**
+ * @author HypherionSA
+ * An Accessor to access FORGE tabs internally
+ */
 @Mixin(CreativeModeTabRegistry.class)
 public interface ForgeCreativeModeTabRegistryAccessor {
 

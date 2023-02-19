@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 /**
+ * @author HypherionSA
  * Helper class to load our resource packs
  */
 public class FabricResourceLoader implements SimpleSynchronousResourceReloadListener {

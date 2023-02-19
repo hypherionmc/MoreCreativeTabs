@@ -18,6 +18,10 @@ import java.util.Collection;
 
 import static me.hypherionmc.morecreativetabs.utils.CreativeTabUtils.getTabKey;
 
+/**
+ * @author HypherionSA
+ * Mixin (or hacks if you will) to bend creative tabs to our will
+ */
 @Mixin(CreativeModeTab.class)
 public class CreativeModeTabMixin {
 
@@ -25,6 +29,11 @@ public class CreativeModeTabMixin {
 
     @Shadow private Collection<ItemStack> displayItems;
 
+    /**
+     * Modify the items inside a tab.
+     * This filters out items removed from old tabs, displays the correct items for Custom Tabs and
+     * replaced tabs
+     */
     @Inject(method = "getDisplayItems", at = @At("RETURN"), cancellable = true)
     public void injectDisplayItems(CallbackInfoReturnable<Collection<ItemStack>> cir) {
         CreativeModeTab tab = ((CreativeModeTab) (Object)this);
@@ -54,6 +63,10 @@ public class CreativeModeTabMixin {
 
     }
 
+    /**
+     * If a tab has no items, it's hidden from the inventory. This overrides
+     * the behaviour for custom tabs so that they are always shown if they have items
+     */
     @Inject(method = "shouldDisplay", at = @At("HEAD"), cancellable = true)
     private void injectShouldDisplay(CallbackInfoReturnable<Boolean> cir) {
         CreativeModeTab tab = ((CreativeModeTab) (Object)this);
@@ -63,6 +76,9 @@ public class CreativeModeTabMixin {
         }
     }
 
+    /**
+     * Modify the Display Name of the tab based on if the tab is a replaced tab, or if showTabNames is enabled
+     */
     @Inject(method = "getDisplayName", at = @At("RETURN"), cancellable = true)
     private void injectDisplayName(CallbackInfoReturnable<Component> cir) {
         Component value = this.displayName;
@@ -79,6 +95,9 @@ public class CreativeModeTabMixin {
         cir.setReturnValue(Component.literal(getTabKey(value)));
     }
 
+    /**
+     * Inject the ItemStack to use as an icon for replaced tabs
+     */
     @Inject(method = "getIconItem", at = @At("RETURN"), cancellable = true)
     private void injectIcon(CallbackInfoReturnable<ItemStack> cir) {
         CreativeTabUtils.replacementTab(convertName(getTabKey(this.displayName))).ifPresent(tabData -> {
@@ -89,6 +108,10 @@ public class CreativeModeTabMixin {
         });
     }
 
+    /**
+     * Override the isAlignedRight value for Hotbar, Search and Inventory based on if they are reordered
+     * or disabled
+     */
     @Inject(method = "isAlignedRight", at = @At("RETURN"), cancellable = true)
     private void injectAlignedRight(CallbackInfoReturnable<Boolean> cir) {
         CreativeModeTab tab = ((CreativeModeTab) (Object)this);

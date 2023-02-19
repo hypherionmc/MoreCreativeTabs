@@ -18,7 +18,6 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = project(":Common").file("src/main/resources/morecreativetabs.accesswidener")
     runs {
         client {
             client()

@@ -6,8 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "CreativeModeTabsMixin",
-    "FabricCreativeGuiComponentsMixin"
+    "FabricCreativeGuiComponentsMixin",
+    "FabricCreativeModeTabsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -14,9 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
+/**
+ * @author HypherionSA
+ * A helper class to add additional info to itemstack tooltips
+ */
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 
+    /**
+     * Show the registry name of the item on the tooltip if showTabNames are enabled
+     */
     @Inject(method = "getTooltipLines", at = @At("RETURN"), cancellable = true)
     private void injectToolTip(Player $$0, TooltipFlag $$1, CallbackInfoReturnable<List<Component>> cir) {
         if (CustomCreativeTabRegistry.showNames) {

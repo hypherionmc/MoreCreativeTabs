@@ -6,6 +6,9 @@ import net.minecraft.world.item.CreativeModeTab;
 
 import java.util.List;
 
+/**
+ * @author HypherionSA
+ */
 public class TabPlatformHelper implements ITabHelper {
 
     @Override

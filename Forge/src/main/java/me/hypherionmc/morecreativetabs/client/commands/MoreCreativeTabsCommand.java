@@ -1,4 +1,4 @@
-package me.hypherionmc.morecreativetabs.commands;
+package me.hypherionmc.morecreativetabs.client.commands;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import me.hypherionmc.morecreativetabs.ModConstants;

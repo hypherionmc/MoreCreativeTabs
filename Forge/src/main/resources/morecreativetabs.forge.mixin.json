@@ -10,8 +10,7 @@
     "ForgeCreativeModeTabRegistryMixin",
     "ForgeCreativeTabsMixin",
     "ForgeCreativeTabsScreenPageMixin",
-    "accessor.ForgeCreativeModeTabRegistryAccessor",
-    "accessor.ForgeCreativeModeTabsAccessor"
+    "accessor.ForgeCreativeModeTabRegistryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

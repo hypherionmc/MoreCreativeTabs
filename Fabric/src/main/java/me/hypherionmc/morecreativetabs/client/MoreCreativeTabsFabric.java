@@ -14,6 +14,9 @@ import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
+/**
+ * @author HypherionSA
+ */
 public class MoreCreativeTabsFabric implements ClientModInitializer {
 
     @Override

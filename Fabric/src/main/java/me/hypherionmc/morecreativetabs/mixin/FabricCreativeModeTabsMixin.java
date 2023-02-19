@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Mixin(value = CreativeModeTabs.class, priority = 0)
-public class CreativeModeTabsMixin {
+public class FabricCreativeModeTabsMixin {
 
     @Inject(method = "checkTabs", at = @At("HEAD"), cancellable = true)
     private static void injectCheckTabs(CreativeModeTab[] groups, CallbackInfoReturnable<List<CreativeModeTab>> cir) {
