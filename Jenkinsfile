@@ -17,15 +17,14 @@ pipeline {
         }
         stage("Prepare") {
             steps {
-                sh "wget -O changelog-forge.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog-forge.md"
-                sh "wget -O changelog-fabric.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog-fabric.md"
+                sh "wget -O changelog-forge.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
             }
         }
         stage("Publish") {
             steps {
-                sh "./gradlew modrinth curseforge -Prelease=true"
+                sh "./gradlew build mergeJars publishMod -Prelease=true"
             }
         }
     }

@@ -10,6 +10,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import static net.minecraft.world.item.CreativeModeTabs.*;
-import static net.minecraft.world.item.CreativeModeTabs.INVENTORY;
 
 /**
  * @author HypherionSA
@@ -28,7 +29,7 @@ public class MoreCreativeTabs {
     private static boolean hasRun = false;
 
     public MoreCreativeTabs() {
-
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
     }
 
     public static void reloadResources() {
