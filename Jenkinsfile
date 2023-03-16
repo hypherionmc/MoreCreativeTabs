@@ -17,7 +17,7 @@ pipeline {
         }
         stage("Prepare") {
             steps {
-                sh "wget -O changelog-forge.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog.md"
+                sh "wget -O changelog.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
             }

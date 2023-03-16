@@ -85,7 +85,6 @@ publisher {
         modrinth = System.getenv("MODRINTH_TOKEN")
     }
 
-    debug = debug_publish
     curseID = curse_id
     modrinthID = modrinth_id
     versionType = rel_type
