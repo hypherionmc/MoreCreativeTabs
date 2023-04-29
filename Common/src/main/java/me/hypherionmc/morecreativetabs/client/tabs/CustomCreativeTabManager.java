@@ -35,6 +35,8 @@ public class CustomCreativeTabManager {
     /* Items to remove from their old tabs */
     public static Set<Item> hidden_stacks = new HashSet<>();
 
+    public static HashMap<Item, String> remapped_items = new HashMap<>();
+
     /* List of Custom Defined tabs */
     public static Set<CreativeModeTab> custom_tabs = new HashSet<>();
 
@@ -104,9 +106,16 @@ public class CustomCreativeTabManager {
                     /* Check if tab replaces an existing tab */
                     if (json.replace) {
                         replaced_tabs.put(fileToTab(location.getPath()).toLowerCase(), Pair.of(json, tabItems));
+
+                        tabItems.forEach(itm -> {
+                            remapped_items.put(itm.getItem(), fileToTab(location.getPath()).toLowerCase());
+                        });
                     } else {
                         /* Create the actual tab and store it */
-                        custom_tabs.add(creator.createTab(json, tabItems));
+                        CreativeModeTab tab = creator.createTab(json, tabItems);
+
+                        tabItems.forEach(itm -> remapped_items.put(itm.getItem(), tab.getRecipeFolderName()));
+                        custom_tabs.add(tab);
                     }
                 }
             } catch (Exception e) {
@@ -152,7 +161,7 @@ public class CustomCreativeTabManager {
      */
     private static void reOrderTabs() {
         List<CreativeModeTab> oldTabs = Arrays.stream(CreativeModeTab.TABS).toList();
-        List<CreativeModeTab> filteredTabs = new ArrayList<>();
+        HashSet<CreativeModeTab> filteredTabs = new LinkedHashSet<>();
         AtomicInteger id = new AtomicInteger(0);
         boolean addExisting = false;
 
@@ -194,7 +203,7 @@ public class CustomCreativeTabManager {
     }
 
     // Just used to remove duplicate code
-    private static void processTab(CreativeModeTab tab, AtomicInteger id, List<CreativeModeTab> filteredTabs) {
+    private static void processTab(CreativeModeTab tab, AtomicInteger id, HashSet<CreativeModeTab> filteredTabs) {
         if (!disabled_tabs.contains(tab.getRecipeFolderName()) && !filteredTabs.contains(tab)) {
             ((CreativeModeTabAccessor) tab).setId(id.getAndIncrement());
             filteredTabs.add(tab);

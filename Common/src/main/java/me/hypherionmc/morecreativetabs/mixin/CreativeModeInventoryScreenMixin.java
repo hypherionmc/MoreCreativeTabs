@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Overwriting the value from CreativeModeTabMixin does not work, so that's why this is here
  */
 @Mixin(CreativeModeInventoryScreen.class)
-public class CreativeModeInventoryScreenMixin {
+public abstract class CreativeModeInventoryScreenMixin {
 
     @Redirect(method = "renderTabButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/CreativeModeTab;isAlignedRight()Z"))
     private boolean injectRenderTabButton(CreativeModeTab instance) {
@@ -38,5 +38,4 @@ public class CreativeModeInventoryScreenMixin {
         }
         return instance.isAlignedRight();
     }
-
 }

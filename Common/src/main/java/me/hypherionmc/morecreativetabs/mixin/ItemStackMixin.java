@@ -29,5 +29,4 @@ public class ItemStackMixin {
             cir.setReturnValue(list);
         }
     }
-
 }
