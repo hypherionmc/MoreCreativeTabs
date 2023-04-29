@@ -8,8 +8,8 @@
     "CreativeModeInventoryScreenMixin",
     "CreativeModeTabAccessor",
     "CreativeModeTabMixin",
-    "ItemStackMixin",
-    "ItemMixin"
+    "ItemMixin",
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
