@@ -9,7 +9,7 @@ pipeline {
         stage("Notify Discord") {
             steps {
                 discordSend webhookURL: env.FDD_WH_ADMIN,
-                        title: "Deploy Started: MoreCreativeTabs Deploy #${BUILD_NUMBER}",
+                        title: "Deploy Started: MoreCreativeTabs 1.19.2 Deploy #${BUILD_NUMBER}",
                         link: env.BUILD_URL,
                         result: 'SUCCESS',
                         description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})"
@@ -17,15 +17,14 @@ pipeline {
         }
         stage("Prepare") {
             steps {
-                sh "wget -O changelog-forge.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog-forge.md"
-                sh "wget -O changelog-fabric.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog-fabric.md"
+                sh "wget -O changelog.md https://raw.githubusercontent.com/hypherionmc/changelogs/main/mct/changelog.md"
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean"
             }
         }
         stage("Publish") {
             steps {
-                sh "./gradlew modrinth curseforge -Prelease=true"
+                sh "./gradlew build mergeJars publishMod -Prelease=true"
             }
         }
     }
@@ -35,7 +34,7 @@ pipeline {
             deleteDir()
 
             discordSend webhookURL: env.FDD_WH_ADMIN,
-                    title: "MoreCreativeTabs Deploy #${BUILD_NUMBER}",
+                    title: "MoreCreativeTabs 1.19.2 Deploy #${BUILD_NUMBER}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     description: "Build: [${BUILD_NUMBER}](${env.BUILD_URL})\nStatus: ${currentBuild.currentResult}"

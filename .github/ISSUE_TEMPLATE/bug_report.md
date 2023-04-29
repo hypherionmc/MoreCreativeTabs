@@ -28,6 +28,7 @@ If applicable, add screenshots to help explain your problem.
 - Modloader
   - [ ] Forge
   - [ ] Fabric
+  - [ ] Quilt
 - Mod Loader Version:
 - Mod Version:
 
