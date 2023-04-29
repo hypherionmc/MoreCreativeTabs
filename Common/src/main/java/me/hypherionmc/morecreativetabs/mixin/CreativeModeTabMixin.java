@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static me.hypherionmc.morecreativetabs.utils.CreativeTabUtils.getTabKey;
 
@@ -134,6 +135,64 @@ public class CreativeModeTabMixin {
     }
 
     /**
+     * Show the correct containing tab name, when in search
+     */
+    @Inject(method = "contains", at = @At("RETURN"), cancellable = true)
+    private void injectContains(ItemStack $$0, CallbackInfoReturnable<Boolean> cir) {
+        CreativeModeTab tab = ((CreativeModeTab) (Object) this);
+
+        if (CustomCreativeTabRegistry.tab_items.containsKey(tab)) {
+            List<ItemStack> itemStacks = CustomCreativeTabRegistry.tab_items.get(tab);
+            cir.setReturnValue(itemStacks.contains($$0));
+            return;
+        }
+
+        if (CustomCreativeTabRegistry.hidden_stacks.contains($$0.getItem())) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        Component value = this.displayName;
+
+        CreativeTabUtils.replacementTab(convertName(getTabKey(value))).ifPresent(tabData -> {
+            cir.setReturnValue(false);
+        });
+    }
+
+    /**
+     * Filter out items from Replaced Tabs and add correct search content for custom tabs
+     */
+    @Inject(method = "getSearchTabDisplayItems", at = @At("RETURN"), cancellable = true)
+    private void injectSearchTabItems(CallbackInfoReturnable<Collection<ItemStack>> cir) {
+        CreativeModeTab tab = ((CreativeModeTab) (Object) this);
+
+        // Tab is a custom tab, so return the items of that tab
+        if (CustomCreativeTabRegistry.tab_items.containsKey(tab)) {
+            List<ItemStack> itemStacks = CustomCreativeTabRegistry.tab_items.get(tab);
+            cir.setReturnValue(itemStacks);
+            return;
+        }
+
+        Component value = this.displayName;
+
+        // Tab is a replaced tab, so hide the items from it
+        CreativeTabUtils.replacementTab(convertName(getTabKey(value))).ifPresent(tabData -> {
+            cir.setReturnValue(new ArrayList<>());
+        });
+
+        // Filter out hidden items
+        Collection<ItemStack> oldStacks = cir.getReturnValue();
+        Collection<ItemStack> returnStacks = new ArrayList<>();
+        oldStacks.forEach(s -> {
+            if (!CustomCreativeTabRegistry.hidden_stacks.contains(s.getItem())) {
+                returnStacks.add(s);
+            }
+        });
+
+        cir.setReturnValue(returnStacks);
+    }
+
+    /**
      * Just a helper method to convert the tab "registry" names from dotted, to underscore.
      * For example: `itemGroup.building` -> `itemGroup_building`
      * @param tabName - The unmodified tab name
@@ -142,5 +201,4 @@ public class CreativeModeTabMixin {
     private String convertName(String tabName) {
         return tabName.replace(".", "_");
     }
-
 }
