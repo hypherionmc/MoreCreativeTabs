@@ -168,7 +168,7 @@ public class CustomCreativeTabRegistry {
      */
     private static void reorderTabs() {
         List<CreativeModeTab> oldTabs = tabs_before;
-        List<CreativeModeTab> filteredTabs = new ArrayList<>();
+        Set<CreativeModeTab> filteredTabs = new LinkedHashSet<>();
         boolean addExisting = false;
 
         if (!reordered_tabs.isEmpty()) {
@@ -193,25 +193,19 @@ public class CustomCreativeTabRegistry {
         }
 
         // Don't disable the Survival Inventory
-        if (!filteredTabs.contains(CreativeModeTabsAccessor.getInventoryTab())) {
-            filteredTabs.add(CreativeModeTabsAccessor.getInventoryTab());
-        }
+        filteredTabs.add(CreativeModeTabsAccessor.getInventoryTab());
 
         // Don't disable Custom Tabs
-        custom_tabs.forEach(tab -> {
-            if (!filteredTabs.contains(tab)) {
-                filteredTabs.add(tab);
-            }
-        });
+        filteredTabs.addAll(custom_tabs);
 
-        current_tabs = filteredTabs;
+        current_tabs = filteredTabs.stream().toList();
 
         PlatformServices.TAB_HELPER.updateCreativeTabs(current_tabs);
     }
 
     // Just used to remove duplicate code
-    private static void processTab(CreativeModeTab tab, List<CreativeModeTab> filteredTabs) {
-        if (!disabled_tabs.contains(getTabKey(((CreativeModeTabAccessor)tab).getInternalDisplayName())) && !filteredTabs.contains(tab)) {
+    private static void processTab(CreativeModeTab tab, Set<CreativeModeTab> filteredTabs) {
+        if (!disabled_tabs.contains(getTabKey(((CreativeModeTabAccessor)tab).getInternalDisplayName()))) {
             filteredTabs.add(tab);
         }
     }
