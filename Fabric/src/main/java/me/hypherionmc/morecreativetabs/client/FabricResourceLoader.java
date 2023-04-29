@@ -5,11 +5,10 @@ import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Helper class to load our resource packs
@@ -41,21 +40,21 @@ public class FabricResourceLoader implements SimpleSynchronousResourceReloadList
         ModConstants.logger.info("Checking for custom creative tabs");
         CustomCreativeTabManager.clearTabs();
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs",
-                path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs")
-                        && !path.getPath().contains("ordered_tabs"));
+        Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs",
+                path -> path.endsWith(".json") && !path.contains("disabled_tabs")
+                        && !path.contains("ordered_tabs"));
 
-        Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
-        Map<ResourceLocation, Resource> orderedTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("ordered_tabs.json"));
+        Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
+        Collection<ResourceLocation> orderedTabs = manager.listResources("morecreativetabs", path -> path.contains("ordered_tabs.json"));
 
         if (!disabledTabs.isEmpty()) {
-            CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
+            CustomCreativeTabManager.loadDisabledTabs(manager, disabledTabs);
         }
 
         if (!orderedTabs.isEmpty()) {
-            CustomCreativeTabManager.loadOrderedTabs(orderedTabs);
+            CustomCreativeTabManager.loadOrderedTabs(manager, orderedTabs);
         }
 
-        CustomCreativeTabManager.loadEntries(customTabs, new FabricTabCreator());
+        CustomCreativeTabManager.loadEntries(manager, customTabs, new FabricTabCreator());
     }
 }

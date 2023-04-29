@@ -10,9 +10,9 @@ import me.hypherionmc.morecreativetabs.mixin.CreativeModeTabAccessor;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,11 +60,11 @@ public class CustomCreativeTabManager {
      * @param entries - The found entries
      * @param creator - The "helper" class that creates the custom tab
      */
-    public static void loadEntries(Map<ResourceLocation, Resource> entries, TabCreator creator) {
-        entries.forEach((location, resource) -> {
+    public static void loadEntries(ResourceManager manager, Collection<ResourceLocation> entries, TabCreator creator) {
+        for (ResourceLocation location : entries) {
             ModConstants.logger.info("Processing " + location.toString());
 
-            try (InputStream stream = resource.open()) {
+            try (InputStream stream = manager.getResource(location).getInputStream()) {
                 CustomCreativeTab json = new Gson().fromJson(new InputStreamReader(stream), CustomCreativeTab.class);
                 ArrayList<ItemStack> tabItems = new ArrayList<>();
 
@@ -90,7 +90,7 @@ public class CustomCreativeTabManager {
 
                                         /* Give the item a "Custom Name" if defined in NBT */
                                         if (tag.contains("customName")) {
-                                            stack.setHoverName(Component.literal(tag.getString("customName")));
+                                            stack.setHoverName(new TextComponent(tag.getString("customName")));
                                         }
                                     } catch (CommandSyntaxException e) {
                                         ModConstants.logger.error("Failed to Process NBT for Item " + item.name, e);
@@ -121,7 +121,7 @@ public class CustomCreativeTabManager {
             } catch (Exception e) {
                 ModConstants.logger.error("Failed to process creative tab", e);
             }
-        });
+        }
 
         reOrderTabs();
     }
@@ -129,31 +129,31 @@ public class CustomCreativeTabManager {
     /**
      * Load disabled tabs for later processing
      */
-    public static void loadDisabledTabs(Map<ResourceLocation, Resource> resourceMap) {
-       resourceMap.forEach((location, resource) -> {
-           ModConstants.logger.info("Processing " + location.toString());
-           try (InputStream stream = resource.open()) {
+    public static void loadDisabledTabs(ResourceManager manager, Collection<ResourceLocation> resources) {
+       for (ResourceLocation resource : resources) {
+           ModConstants.logger.info("Processing " + resource.toString());
+           try (InputStream stream = manager.getResource(resource).getInputStream()) {
                DisabledTabsJsonHelper json = new Gson().fromJson(new InputStreamReader(stream), DisabledTabsJsonHelper.class);
                disabled_tabs.addAll(json.disabled_tabs);
            } catch (Exception e) {
-               ModConstants.logger.error("Failed to process disabled tabs for " + location, e);
+               ModConstants.logger.error("Failed to process disabled tabs for " + resource, e);
            }
-       });
+       }
     }
 
     /**
      * Load ordered tabs for later processing
      */
-    public static void loadOrderedTabs(Map<ResourceLocation, Resource> resourceMap) {
-        resourceMap.forEach((location, resource) -> {
-            ModConstants.logger.info("Processing " + location.toString());
-            try (InputStream stream = resource.open()) {
+    public static void loadOrderedTabs(ResourceManager manager, Collection<ResourceLocation> resourceMap) {
+        for (ResourceLocation resource : resourceMap) {
+            ModConstants.logger.info("Processing " + resource.toString());
+            try (InputStream stream = manager.getResource(resource).getInputStream()) {
                 OrderedTabs tabs = new Gson().fromJson(new InputStreamReader(stream), OrderedTabs.class);
                 reordered_tabs.addAll(tabs.tabs);
             } catch (Exception e) {
-                ModConstants.logger.error("Failed to process ordered tabs for " + location, e);
+                ModConstants.logger.error("Failed to process ordered tabs for " + resource, e);
             }
-        });
+        }
     }
 
     /**

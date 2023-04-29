@@ -4,6 +4,7 @@ import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -25,7 +26,7 @@ public class ItemStackMixin {
         if (CustomCreativeTabManager.showNames) {
             ItemStack stack = (ItemStack) (Object)this;
             List<Component> list = cir.getReturnValue();
-            list.add(Component.literal("MCT Name: " + Registry.ITEM.getKey(stack.getItem())).withStyle(ChatFormatting.YELLOW));
+            list.add(new TextComponent("MCT Name: " + Registry.ITEM.getKey(stack.getItem())).withStyle(ChatFormatting.YELLOW));
             cir.setReturnValue(list);
         }
     }

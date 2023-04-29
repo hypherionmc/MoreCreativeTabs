@@ -5,6 +5,8 @@ import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,11 +34,11 @@ public abstract class CreativeModeTabMixin {
     @Inject(at = @At("RETURN"), method = "getDisplayName", cancellable = true)
     public void getDisplayName(CallbackInfoReturnable<Component> cir) {
         CreativeTabUtils.replacementTab(convertName(getRecipeFolderName())).ifPresent(tabData -> {
-            cir.setReturnValue(Component.translatable("itemGroup." + CreativeTabUtils.prefix(tabData.getLeft().tab_name)));
+            cir.setReturnValue(new TranslatableComponent("itemGroup." + CreativeTabUtils.prefix(tabData.getLeft().tab_name)));
         });
 
         if (CustomCreativeTabManager.showNames) {
-            cir.setReturnValue(Component.literal(this.getRecipeFolderName()));
+            cir.setReturnValue(new TextComponent(this.getRecipeFolderName()));
         }
     }
 

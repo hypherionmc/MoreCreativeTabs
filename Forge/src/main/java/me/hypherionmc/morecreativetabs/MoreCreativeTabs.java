@@ -4,7 +4,6 @@ import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * @author HypherionSA
@@ -46,22 +45,22 @@ public class MoreCreativeTabs {
         CustomCreativeTabManager.clearTabs();
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             ResourceManager manager = Minecraft.getInstance().getResourceManager();
-            Map<ResourceLocation, Resource> customTabs = manager.listResources("morecreativetabs",
-                    path -> path.getPath().endsWith(".json") && !path.getPath().contains("disabled_tabs")
-                            && !path.getPath().equals("ordered_tabs"));
+            Collection<ResourceLocation> customTabs = manager.listResources("morecreativetabs",
+                    path -> path.endsWith(".json") && !path.contains("disabled_tabs")
+                            && !path.equals("ordered_tabs"));
 
-            Map<ResourceLocation, Resource> disabledTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("disabled_tabs.json"));
-            Map<ResourceLocation, Resource> orderedTabs = manager.listResources("morecreativetabs", path -> path.getPath().contains("ordered_tabs.json"));
+            Collection<ResourceLocation> disabledTabs = manager.listResources("morecreativetabs", path -> path.contains("disabled_tabs.json"));
+            Collection<ResourceLocation> orderedTabs = manager.listResources("morecreativetabs", path -> path.contains("ordered_tabs.json"));
 
             if (!disabledTabs.isEmpty()) {
-                CustomCreativeTabManager.loadDisabledTabs(disabledTabs);
+                CustomCreativeTabManager.loadDisabledTabs(manager, disabledTabs);
             }
 
             if (!orderedTabs.isEmpty()) {
-                CustomCreativeTabManager.loadOrderedTabs(orderedTabs);
+                CustomCreativeTabManager.loadOrderedTabs(manager, orderedTabs);
             }
 
-            CustomCreativeTabManager.loadEntries(customTabs, ((jsonHelper, stacks) -> CreativeTabUtils.defaultTabCreator(-1, jsonHelper, stacks)));
+            CustomCreativeTabManager.loadEntries(manager, customTabs, ((jsonHelper, stacks) -> CreativeTabUtils.defaultTabCreator(-1, jsonHelper, stacks)));
         });
     }
 }

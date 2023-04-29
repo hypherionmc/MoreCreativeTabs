@@ -5,7 +5,7 @@ import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,11 +24,11 @@ public class MoreCreativeTabsCommand {
                 .then(Commands.argument("enabled", BoolArgumentType.bool()).executes(context -> {
                     boolean enabled = BoolArgumentType.getBool(context, "enabled");
                     CustomCreativeTabManager.showNames = enabled;
-                    context.getSource().sendSuccess(enabled ? Component.literal("Showing tab registry names") : Component.literal("Showing tab names"), true);
+                    context.getSource().sendSuccess(enabled ? new TextComponent("Showing tab registry names") : new TextComponent("Showing tab names"), true);
                     return 1;
                 }))).then(Commands.literal("reloadTabs").executes(context -> {
                     PlatformServices.helper.reloadTabs();
-                    context.getSource().sendSuccess(Component.literal("Reloaded Custom Tabs"), true);
+                    context.getSource().sendSuccess(new TextComponent("Reloaded Custom Tabs"), true);
                     return 1;
                 }))
         );
