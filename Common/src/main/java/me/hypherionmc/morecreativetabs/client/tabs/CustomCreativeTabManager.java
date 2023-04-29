@@ -220,5 +220,6 @@ public class CustomCreativeTabManager {
         PlatformServices.helper.setNewTabs(tabs_before);
         custom_tabs.clear();
         replaced_tabs.clear();
+        remapped_items.clear();
     }
 }

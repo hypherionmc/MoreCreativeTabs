@@ -9,9 +9,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Map;
 
@@ -21,14 +21,21 @@ import java.util.Map;
 @Mod(ModConstants.MOD_ID)
 public class MoreCreativeTabs {
 
+    private static boolean hasRun = false;
+
     public MoreCreativeTabs() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupComplete);
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
     }
 
-    // Run after all mods have completed their setup
-    private void setupComplete(FMLLoadCompleteEvent event) {
-        CustomCreativeTabManager.tabs_before = CreativeModeTab.TABS;
-        reloadTabs();
+
+    public static void reloadResources() {
+        if (!hasRun) {
+            CustomCreativeTabManager.tabs_before = CreativeModeTab.TABS;
+            reloadTabs();
+            hasRun = true;
+        } else {
+            reloadTabs();
+        }
     }
 
     /**
