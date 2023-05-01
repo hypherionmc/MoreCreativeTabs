@@ -167,7 +167,10 @@ public class CustomCreativeTabRegistry {
      * This function is used to filter out disabled tabs and apply order to the tabs
      */
     private static void reorderTabs() {
-        List<CreativeModeTab> oldTabs = tabs_before;
+        List<CreativeModeTab> oldTabs = new ArrayList<>();
+        oldTabs.addAll(tabs_before);
+        oldTabs.addAll(custom_tabs);
+
         Set<CreativeModeTab> filteredTabs = new LinkedHashSet<>();
         boolean addExisting = false;
 

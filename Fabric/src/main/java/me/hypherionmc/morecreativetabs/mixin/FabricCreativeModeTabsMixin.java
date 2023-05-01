@@ -53,5 +53,4 @@ public class FabricCreativeModeTabsMixin {
 
         cir.setReturnValue(List.of(groups));
     }
-
 }
