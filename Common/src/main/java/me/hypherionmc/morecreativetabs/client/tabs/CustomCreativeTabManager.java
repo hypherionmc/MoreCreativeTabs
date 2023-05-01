@@ -160,7 +160,10 @@ public class CustomCreativeTabManager {
      * This function is used to filter out disabled tabs
      */
     private static void reOrderTabs() {
-        List<CreativeModeTab> oldTabs = Arrays.stream(CreativeModeTab.TABS).toList();
+        List<CreativeModeTab> oldTabs = new ArrayList<>();
+        oldTabs.addAll(List.of(CreativeModeTab.TABS));
+        oldTabs.addAll(custom_tabs);
+
         HashSet<CreativeModeTab> filteredTabs = new LinkedHashSet<>();
         AtomicInteger id = new AtomicInteger(0);
         boolean addExisting = false;
