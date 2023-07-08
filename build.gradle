@@ -22,9 +22,8 @@ forgix {
 
     forge {
         projectName = "Forge"
-
-        mixin "${mod_id}.mixin.json"
-        mixin "${mod_id}.forge.mixin.json"
+        mixin "${mod_id}.mixins.json"
+        mixin "${mod_id}.forge.mixins.json"
     }
 
     fabric {
@@ -90,8 +89,8 @@ publisher {
     versionType = rel_type
     changelog = rootProject.file(changelog_file)
     version = "${minecraft_version}-${final_ver}"
-    displayName = "[1.19 - 1.19.2] MoreCreativeTabs - ${final_ver}"
-    gameVersions = ["1.19", "1.19.1", "1.19.2"]
+    displayName = "[1.19.2] MoreCreativeTabs - ${final_ver}"
+    gameVersions = ["1.19.2"]
     loaders = ["forge", "fabric", "quilt"]
     artifact = forgix.getOutputDir() + "/" + forgix.getMergedJarName()
 }
