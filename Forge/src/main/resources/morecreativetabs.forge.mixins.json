@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "ForgeReloadableResourceManagerMixin"
+    "ForgeCreativeInventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
