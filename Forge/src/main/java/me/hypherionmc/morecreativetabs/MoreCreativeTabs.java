@@ -1,5 +1,6 @@
 package me.hypherionmc.morecreativetabs;
 
+import me.hypherionmc.morecreativetabs.client.ForgeResourceReloader;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabManager;
 import me.hypherionmc.morecreativetabs.util.CreativeTabUtils;
 import net.minecraft.client.Minecraft;
@@ -8,10 +9,12 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Map;
 
@@ -25,6 +28,7 @@ public class MoreCreativeTabs {
 
     public MoreCreativeTabs() {
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerReloadListener);
     }
 
 
@@ -63,5 +67,9 @@ public class MoreCreativeTabs {
 
             CustomCreativeTabManager.loadEntries(customTabs, ((jsonHelper, stacks) -> CreativeTabUtils.defaultTabCreator(-1, jsonHelper, stacks)));
         });
+    }
+
+    public void registerReloadListener(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new ForgeResourceReloader());
     }
 }
