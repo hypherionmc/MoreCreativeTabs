@@ -22,9 +22,8 @@ forgix {
 
     forge {
         projectName = "Forge"
-
-        mixin "${mod_id}.mixin.json"
-        mixin "${mod_id}.forge.mixin.json"
+        mixin "${mod_id}.mixins.json"
+        mixin "${mod_id}.forge.mixins.json"
     }
 
     fabric {
