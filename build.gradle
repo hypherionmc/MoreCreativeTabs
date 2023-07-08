@@ -90,8 +90,8 @@ publisher {
     versionType = rel_type
     changelog = rootProject.file(changelog_file)
     version = "${minecraft_version}-${final_ver}"
-    displayName = "[1.19.3/4] MoreCreativeTabs - ${final_ver}"
-    gameVersions = ["1.19.3", "1.19.4"]
+    displayName = "[1.20.x] MoreCreativeTabs - ${final_ver}"
+    gameVersions = ["1.20", "1.20.1"]
     loaders = ["forge", "fabric", "quilt"]
     artifact = forgix.getOutputDir() + "/" + forgix.getMergedJarName()
 }

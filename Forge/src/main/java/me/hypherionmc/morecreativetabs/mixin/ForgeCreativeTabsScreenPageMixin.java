@@ -22,7 +22,7 @@ import java.util.List;
 @Mixin(CreativeTabsScreenPage.class)
 public class ForgeCreativeTabsScreenPageMixin {
 
-    @Shadow(remap = false) @Final @Mutable private ConcatenatedListView<CreativeModeTab> visibleTabs;
+    @Shadow(remap = false) @Final @Mutable private List<CreativeModeTab> visibleTabs;
 
     @Mutable
     @Shadow(remap = false) @Final private List<CreativeModeTab> topTabs;

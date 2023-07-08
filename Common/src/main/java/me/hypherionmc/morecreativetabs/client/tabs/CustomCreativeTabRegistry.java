@@ -9,6 +9,7 @@ import me.hypherionmc.morecreativetabs.client.data.OrderedTabs;
 import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabAccessor;
 import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import me.hypherionmc.morecreativetabs.platform.PlatformServices;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
@@ -196,7 +197,7 @@ public class CustomCreativeTabRegistry {
         }
 
         // Don't disable the Survival Inventory
-        filteredTabs.add(CreativeModeTabsAccessor.getInventoryTab());
+        filteredTabs.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getInventoryTab()));
 
         // Don't disable Custom Tabs
         filteredTabs.addAll(custom_tabs);

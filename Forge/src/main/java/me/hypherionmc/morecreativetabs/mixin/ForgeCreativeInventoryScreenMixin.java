@@ -2,6 +2,7 @@ package me.hypherionmc.morecreativetabs.mixin;
 
 import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.client.gui.CreativeTabsScreenPage;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,19 +37,24 @@ public class ForgeCreativeInventoryScreenMixin {
         int column = currentPage.getColumn(instance);
         boolean isTop = currentPage.isTop(instance);
 
-        if (instance == CreativeModeTabsAccessor.getHotbarTab() && (column != 5 || !isTop)) {
+        CreativeModeTab hotBar = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getHotbarTab());
+        CreativeModeTab search = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getSearchTab());
+        CreativeModeTab inventory = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getInventoryTab());
+        CreativeModeTab op = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getOpBlockTab());
+
+        if (instance == hotBar && (column != 5 || !isTop)) {
             return false;
         }
 
-        if (instance == CreativeModeTabsAccessor.getSearchTab() && (column != 6 || !isTop)) {
+        if (instance == search && (column != 6 || !isTop)) {
             return false;
         }
 
-        if (instance == CreativeModeTabsAccessor.getOpBlockTab() && (column != 5 || isTop)) {
+        if (instance == inventory && (column != 6 || isTop)) {
             return false;
         }
 
-        if (instance == CreativeModeTabsAccessor.getInventoryTab() && (column != 6 || isTop)) {
+        if (instance == op && (column != 5 || isTop)) {
             return false;
         }
 

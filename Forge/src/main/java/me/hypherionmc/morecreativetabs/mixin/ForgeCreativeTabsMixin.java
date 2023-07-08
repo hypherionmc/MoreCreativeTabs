@@ -1,6 +1,8 @@
 package me.hypherionmc.morecreativetabs.mixin;
 
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
+import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,15 +40,16 @@ public class ForgeCreativeTabsMixin {
      */
     @Inject(method = "getDefaultTab", at = @At("RETURN"), cancellable = true)
     private static void injectDefaultTab(CallbackInfoReturnable<CreativeModeTab> cir) {
-        cir.setReturnValue(CustomCreativeTabRegistry.current_tabs.stream().filter(CreativeModeTab::shouldDisplay).findFirst().orElse(CreativeModeTabs.INVENTORY));
+        CreativeModeTab inventory = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getInventoryTab());
+        cir.setReturnValue(CustomCreativeTabRegistry.current_tabs.stream().filter(CreativeModeTab::shouldDisplay).findFirst().orElse(inventory));
     }
 
     /**
      * Remove the Hotbar, Search and Inventory tabs from ALWAYS being shown
      */
-    @Inject(method = "defaultTabs", at = @At("RETURN"), cancellable = true, remap = false)
+    /*@Inject(method = "defaultTabs", at = @At("RETURN"), cancellable = true, remap = false)
     private static void injectDefaultTabs(CallbackInfoReturnable<List<CreativeModeTab>> cir) {
         cir.setReturnValue(new ArrayList<>());
-    }
+    }*/
 
 }

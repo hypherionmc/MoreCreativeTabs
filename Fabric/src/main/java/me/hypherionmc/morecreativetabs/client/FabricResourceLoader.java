@@ -5,6 +5,7 @@ import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
 import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -28,6 +29,7 @@ public class FabricResourceLoader implements SimpleSynchronousResourceReloadList
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
         if (!hasRun) {
+            BuiltInRegistries.CREATIVE_MODE_TAB
             CustomCreativeTabRegistry.tabs_before = CreativeModeTabsAccessor.getOldTabs();
             reloadTabs();
             hasRun = true;
