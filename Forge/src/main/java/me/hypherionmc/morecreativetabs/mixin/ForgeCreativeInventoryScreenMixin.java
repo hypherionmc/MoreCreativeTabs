@@ -22,7 +22,7 @@ public class ForgeCreativeInventoryScreenMixin {
 
     @Shadow(remap = false) private CreativeTabsScreenPage currentPage;
 
-    @Shadow @Final private List<CreativeTabsScreenPage> pages;
+    @Shadow(remap = false) @Final private List<CreativeTabsScreenPage> pages;
 
     /**
      * Modify the max number of tabs per "Page" to 14
