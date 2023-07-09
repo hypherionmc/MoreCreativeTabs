@@ -1,16 +1,17 @@
 package me.hypherionmc.morecreativetabs.mixin;
 
-import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.client.gui.CreativeTabsScreenPage;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.List;
 
 /**
  * @author HypherionSA
@@ -20,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class ForgeCreativeInventoryScreenMixin {
 
     @Shadow(remap = false) private CreativeTabsScreenPage currentPage;
+
+    @Shadow @Final private List<CreativeTabsScreenPage> pages;
 
     /**
      * Modify the max number of tabs per "Page" to 14
@@ -37,28 +40,15 @@ public class ForgeCreativeInventoryScreenMixin {
         int column = currentPage.getColumn(instance);
         boolean isTop = currentPage.isTop(instance);
 
-        CreativeModeTab hotBar = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getHotbarTab());
-        CreativeModeTab search = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getSearchTab());
-        CreativeModeTab inventory = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getInventoryTab());
-        CreativeModeTab op = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getOpBlockTab());
+        if (pages.indexOf(currentPage) == 0) {
+            if (isTop) {
+                return column == 5 || column == 6;
+            }
 
-        if (instance == hotBar && (column != 5 || !isTop)) {
-            return false;
+            return column == 5 || column == 6;
         }
 
-        if (instance == search && (column != 6 || !isTop)) {
-            return false;
-        }
-
-        if (instance == inventory && (column != 6 || isTop)) {
-            return false;
-        }
-
-        if (instance == op && (column != 5 || isTop)) {
-            return false;
-        }
-
-        return instance.isAlignedRight();
+        return false;
     }
 
 }

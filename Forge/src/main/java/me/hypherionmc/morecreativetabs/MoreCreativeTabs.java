@@ -36,13 +36,13 @@ public class MoreCreativeTabs {
 
     public static void reloadResources() {
         if (!hasRun) {
-            List<ResourceKey<CreativeModeTab>> VANILLA_TABS = ImmutableList.of(BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_BLOCKS, REDSTONE_BLOCKS, HOTBAR, SEARCH, TOOLS_AND_UTILITIES, COMBAT, FOOD_AND_DRINKS, INGREDIENTS, SPAWN_EGGS, OP_BLOCKS, INVENTORY);
+            List<ResourceKey<CreativeModeTab>> VANILLA_TABS = ImmutableList.of(BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_BLOCKS, REDSTONE_BLOCKS, HOTBAR, SEARCH, TOOLS_AND_UTILITIES, COMBAT, FOOD_AND_DRINKS, INGREDIENTS, SPAWN_EGGS, INVENTORY);
             List<CreativeModeTab> beforeTabs = new ArrayList<>();
-
             VANILLA_TABS.forEach(t -> beforeTabs.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(t)));
+            CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.get(OP_BLOCKS);
 
             ForgeCreativeModeTabRegistryAccessor.getInternalTabs().forEach(t -> {
-                if (!beforeTabs.contains(t)) {
+                if (t != tab && !beforeTabs.contains(t)) {
                     beforeTabs.add(t);
                 }
             });

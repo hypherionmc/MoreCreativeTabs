@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -35,12 +36,13 @@ public class FabricResourceLoader implements SimpleSynchronousResourceReloadList
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
         if (!hasRun) {
-            List<ResourceKey<CreativeModeTab>> VANILLA_TABS = ImmutableList.of(BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_BLOCKS, REDSTONE_BLOCKS, HOTBAR, SEARCH, TOOLS_AND_UTILITIES, COMBAT, FOOD_AND_DRINKS, INGREDIENTS, SPAWN_EGGS, OP_BLOCKS, INVENTORY);
+            List<ResourceKey<CreativeModeTab>> VANILLA_TABS = ImmutableList.of(BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_BLOCKS, REDSTONE_BLOCKS, HOTBAR, SEARCH, TOOLS_AND_UTILITIES, COMBAT, FOOD_AND_DRINKS, INGREDIENTS, SPAWN_EGGS, INVENTORY);
             List<CreativeModeTab> beforeTabs = new ArrayList<>();
             VANILLA_TABS.forEach(t -> beforeTabs.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(t)));
+            CreativeModeTab tab = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.OP_BLOCKS);
 
             BuiltInRegistries.CREATIVE_MODE_TAB.stream().toList().forEach(t -> {
-                if (!beforeTabs.contains(t))
+                if (t != tab && !beforeTabs.contains(t))
                     beforeTabs.add(t);
             });
 

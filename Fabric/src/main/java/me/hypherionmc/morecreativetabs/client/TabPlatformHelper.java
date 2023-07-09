@@ -33,6 +33,5 @@ public class TabPlatformHelper implements ITabHelper {
         accessor.getDisplayItems().clear();
         accessor.getDisplayItems().addAll(set);
         accessor.getDisplayItemSearchTab().addAll(set);
-        System.out.println("HEY!");
     }
 }

@@ -1,7 +1,6 @@
 package me.hypherionmc.morecreativetabs.mixin;
 
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
-import net.fabricmc.fabric.impl.itemgroup.FabricItemGroup;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -10,14 +9,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collection;
 import java.util.Set;
 
 @Mixin(CreativeModeTab.class)
-public abstract class FabricCreativeModeTabMixin {
-
+public abstract class ForgeCreativeTabMixin {
 
     @Shadow private Collection<ItemStack> displayItems;
 
@@ -26,28 +23,6 @@ public abstract class FabricCreativeModeTabMixin {
     @Shadow private Set<ItemStack> displayItemsSearchTab;
 
     @Shadow public abstract Collection<ItemStack> getSearchTabDisplayItems();
-
-    /**
-     * Override the isAlignedRight value for Hotbar, Search and Inventory based on if they are reordered
-     * or disabled
-     */
-    @Inject(method = "isAlignedRight", at = @At("RETURN"), cancellable = true)
-    private void injectAlignedRight(CallbackInfoReturnable<Boolean> cir) {
-        CreativeModeTab tab = ((CreativeModeTab) (Object)this);
-        FabricItemGroup group = ((FabricItemGroup) this);
-
-        if (group.getPage() == 0) {
-            if (tab.row() == CreativeModeTab.Row.TOP) {
-                cir.setReturnValue(tab.column() == 5 || tab.column() == 6);
-            }
-
-            if (tab.row() == CreativeModeTab.Row.BOTTOM) {
-                cir.setReturnValue(tab.column() == 5 || tab.column() == 6);
-            }
-            return;
-        }
-        cir.setReturnValue(false);
-    }
 
     @Inject(method = "buildContents", at = @At("HEAD"), cancellable = true)
     private void injectBuildContents(CreativeModeTab.ItemDisplayParameters itemDisplayParameters, CallbackInfo ci) {
@@ -67,4 +42,5 @@ public abstract class FabricCreativeModeTabMixin {
             displayItemsSearchTab.addAll(this.getSearchTabDisplayItems());
         }
     }
+
 }

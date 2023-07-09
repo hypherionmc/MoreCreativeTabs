@@ -1,9 +1,7 @@
 package me.hypherionmc.morecreativetabs.mixin;
 
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
-import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import me.hypherionmc.morecreativetabs.utils.CreativeTabUtils;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +23,7 @@ import static me.hypherionmc.morecreativetabs.utils.CreativeTabUtils.getTabKey;
  * Mixin (or hacks if you will) to bend creative tabs to our will
  */
 @Mixin(CreativeModeTab.class)
-public class CreativeModeTabMixin {
+public abstract class CreativeModeTabMixin {
 
     @Shadow @Final private Component displayName;
 
@@ -108,36 +106,6 @@ public class CreativeModeTabMixin {
                 cir.setReturnValue(stack);
             }
         });
-    }
-
-    /**
-     * Override the isAlignedRight value for Hotbar, Search and Inventory based on if they are reordered
-     * or disabled
-     */
-    @Inject(method = "isAlignedRight", at = @At("RETURN"), cancellable = true)
-    private void injectAlignedRight(CallbackInfoReturnable<Boolean> cir) {
-        CreativeModeTab tab = ((CreativeModeTab) (Object)this);
-
-        CreativeModeTab hotBar = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getHotbarTab());
-        CreativeModeTab search = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getSearchTab());
-        CreativeModeTab inventory = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getInventoryTab());
-        CreativeModeTab op = BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabsAccessor.getOpBlockTab());
-
-        if (tab == hotBar && (tab.column() != 5 || tab.row() != CreativeModeTab.Row.TOP)) {
-            cir.setReturnValue(false);
-        }
-
-        if (tab == search && (tab.column() != 6 || tab.row() != CreativeModeTab.Row.TOP)) {
-            cir.setReturnValue(false);
-        }
-
-        if (tab == op && (tab.column() != 5 || tab.row() != CreativeModeTab.Row.BOTTOM)) {
-            cir.setReturnValue(false);
-        }
-
-        if (tab == inventory && (tab.column() != 6 || tab.row() != CreativeModeTab.Row.BOTTOM)) {
-            cir.setReturnValue(false);
-        }
     }
 
     /**

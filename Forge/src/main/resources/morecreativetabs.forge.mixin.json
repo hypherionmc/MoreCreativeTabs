@@ -8,6 +8,8 @@
   "client": [
     "ForgeCreativeInventoryScreenMixin",
     "ForgeCreativeModeTabRegistryMixin",
+    "ForgeCreativeRegistryMixin",
+    "ForgeCreativeTabMixin",
     "ForgeCreativeTabsMixin",
     "ForgeCreativeTabsScreenPageMixin",
     "ForgeReloadableResourceManagerMixin",
