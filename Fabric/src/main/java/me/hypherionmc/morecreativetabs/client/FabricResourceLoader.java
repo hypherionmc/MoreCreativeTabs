@@ -1,17 +1,23 @@
 package me.hypherionmc.morecreativetabs.client;
 
+import com.google.common.collect.ImmutableList;
 import me.hypherionmc.morecreativetabs.ModConstants;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
-import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabsAccessor;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import static net.minecraft.world.item.CreativeModeTabs.*;
 
 /**
  * @author HypherionSA
@@ -29,8 +35,16 @@ public class FabricResourceLoader implements SimpleSynchronousResourceReloadList
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
         if (!hasRun) {
-            BuiltInRegistries.CREATIVE_MODE_TAB
-            CustomCreativeTabRegistry.tabs_before = CreativeModeTabsAccessor.getOldTabs();
+            List<ResourceKey<CreativeModeTab>> VANILLA_TABS = ImmutableList.of(BUILDING_BLOCKS, COLORED_BLOCKS, NATURAL_BLOCKS, FUNCTIONAL_BLOCKS, REDSTONE_BLOCKS, HOTBAR, SEARCH, TOOLS_AND_UTILITIES, COMBAT, FOOD_AND_DRINKS, INGREDIENTS, SPAWN_EGGS, OP_BLOCKS, INVENTORY);
+            List<CreativeModeTab> beforeTabs = new ArrayList<>();
+            VANILLA_TABS.forEach(t -> beforeTabs.add(BuiltInRegistries.CREATIVE_MODE_TAB.get(t)));
+
+            BuiltInRegistries.CREATIVE_MODE_TAB.stream().toList().forEach(t -> {
+                if (!beforeTabs.contains(t))
+                    beforeTabs.add(t);
+            });
+
+            CustomCreativeTabRegistry.tabs_before = beforeTabs;
             reloadTabs();
             hasRun = true;
         } else {

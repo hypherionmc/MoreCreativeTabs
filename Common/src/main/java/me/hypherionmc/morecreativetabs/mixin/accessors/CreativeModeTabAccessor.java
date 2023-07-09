@@ -2,9 +2,13 @@ package me.hypherionmc.morecreativetabs.mixin.accessors;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author HypherionSA
@@ -24,5 +28,11 @@ public interface CreativeModeTabAccessor {
 
     @Accessor("displayName")
     public Component getInternalDisplayName();
+
+    @Accessor("displayItems")
+    public Collection<ItemStack> getDisplayItems();
+
+    @Accessor("displayItemsSearchTab")
+    public Set<ItemStack> getDisplayItemSearchTab();
 
 }
