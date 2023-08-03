@@ -1,6 +1,7 @@
 package me.hypherionmc.morecreativetabs.mixin;
 
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
+import me.hypherionmc.morecreativetabs.platform.PlatformServices;
 import net.fabricmc.fabric.impl.itemgroup.FabricItemGroup;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -54,6 +55,7 @@ public abstract class FabricCreativeModeTabMixin {
         final CreativeModeTab self = (CreativeModeTab) (Object) this;
 
         if (self == CreativeModeTabs.searchTab()) {
+            PlatformServices.TAB_HELPER.updateCreativeTabs(CustomCreativeTabRegistry.current_tabs);
             ci.cancel();
             return;
         }

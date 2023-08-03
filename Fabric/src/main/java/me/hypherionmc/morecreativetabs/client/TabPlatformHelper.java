@@ -3,7 +3,6 @@ package me.hypherionmc.morecreativetabs.client;
 import me.hypherionmc.morecreativetabs.client.tabs.CustomCreativeTabRegistry;
 import me.hypherionmc.morecreativetabs.mixin.accessors.CreativeModeTabAccessor;
 import me.hypherionmc.morecreativetabs.platform.services.ITabHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -20,18 +19,20 @@ public class TabPlatformHelper implements ITabHelper {
     @Override
     public void updateCreativeTabs(List<CreativeModeTab> tabs) {
         CreativeModeTabs.validate();
-        Minecraft.getInstance().createSearchTrees();
 
         Set<ItemStack> set = ItemStackLinkedSet.createTypeAndTagSet();
-        CreativeModeTabAccessor accessor = ((CreativeModeTabAccessor) CreativeModeTabs.searchTab());
+        CreativeModeTab searchTab = CreativeModeTabs.searchTab();
+        CreativeModeTabAccessor accessor = (CreativeModeTabAccessor) searchTab;
         for (CreativeModeTab t : CustomCreativeTabRegistry.current_tabs) {
             if (t.getType() != CreativeModeTab.Type.SEARCH) {
                 set.addAll(t.getSearchTabDisplayItems());
             }
         }
         accessor.getDisplayItemSearchTab().clear();
-        accessor.getDisplayItems().clear();
-        accessor.getDisplayItems().addAll(set);
+        accessor.getDisplayItemsVariable().clear();
+        accessor.getDisplayItemsVariable().addAll(set);
         accessor.getDisplayItemSearchTab().addAll(set);
+
+        searchTab.rebuildSearchTree();
     }
 }

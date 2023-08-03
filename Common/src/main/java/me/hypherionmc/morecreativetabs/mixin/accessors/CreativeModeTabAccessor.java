@@ -30,7 +30,7 @@ public interface CreativeModeTabAccessor {
     public Component getInternalDisplayName();
 
     @Accessor("displayItems")
-    public Collection<ItemStack> getDisplayItems();
+    public Collection<ItemStack> getDisplayItemsVariable();
 
     @Accessor("displayItemsSearchTab")
     public Set<ItemStack> getDisplayItemSearchTab();
